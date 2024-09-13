@@ -229,6 +229,7 @@ class AudioRoutePickerDialog extends Component<IProps, IState> {
     _onSelectDeviceFn(device: IDevice) {
         return () => {
             this.props.dispatch(hideSheet());
+            console.log("--AudioMode-232-");
             AudioMode.setAudioDevice(device.uid || device.type);
         };
     }

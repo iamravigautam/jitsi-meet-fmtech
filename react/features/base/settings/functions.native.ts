@@ -14,6 +14,7 @@ const { AudioMode } = NativeModules;
  * @returns {void}
  */
 export function handleCallIntegrationChange(disabled: boolean) {
+    console.log("--AudioMode-17-", AudioMode)
     if (AudioMode.setUseConnectionService) {
         AudioMode.setUseConnectionService(!disabled);
     }

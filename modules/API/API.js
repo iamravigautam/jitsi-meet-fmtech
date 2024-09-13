@@ -21,7 +21,7 @@ import {
     setFollowMe,
     setLocalSubject,
     setPassword,
-    setSubject
+    setSubject,
 } from '../../react/features/base/conference/actions';
 import { getCurrentConference, isP2pActive } from '../../react/features/base/conference/functions';
 import { overwriteConfig } from '../../react/features/base/config/actions';
@@ -122,6 +122,7 @@ import {
     API_ID,
     ENDPOINT_TEXT_MESSAGE_NAME
 } from './constants';
+import { setLobyDescription, setLobyTitle, setMaxBitrate, setMeetingTitle, setMinBitrate, setStdBitrate, setWaitingText } from '../../react/features/base/conference/actions.any';
 
 const logger = Logger.getLogger(__filename);
 
@@ -363,6 +364,34 @@ function initCommands() {
         'subject': subject => {
             sendAnalytics(createApiEvent('subject.changed'));
             APP.store.dispatch(setSubject(subject));
+        },
+        'waitingText': waitingText => {
+            sendAnalytics(createApiEvent('waitingText.changed'));
+            APP.store.dispatch(setWaitingText(waitingText));
+        },
+        'meetingTitle': meetingTitle => {
+            sendAnalytics(createApiEvent('meetingTitle.changed'));
+            APP.store.dispatch(setMeetingTitle(meetingTitle));
+        },
+        'lobyTitle': lobyTitle => {
+            sendAnalytics(createApiEvent('lobyTitle.changed'));
+            APP.store.dispatch(setLobyTitle(lobyTitle));
+        },
+        'lobyDescription': lobyDescription => {
+            sendAnalytics(createApiEvent('lobyDescription.changed'));
+            APP.store.dispatch(setLobyDescription(lobyDescription));
+        },
+        'minBitrate': minBitrate => {
+            sendAnalytics(createApiEvent('minBitrate.changed'));
+            APP.store.dispatch(setMinBitrate(minBitrate));
+        },
+        'stdBitrate': stdBitrate => {
+            sendAnalytics(createApiEvent('stdBitrate.changed'));
+            APP.store.dispatch(setStdBitrate(stdBitrate));
+        },
+        'maxBitrate': maxBitrate => {
+            sendAnalytics(createApiEvent('maxBitrate.changed'));
+            APP.store.dispatch(setMaxBitrate(maxBitrate));
         },
         'submit-feedback': feedback => {
             sendAnalytics(createApiEvent('submit.feedback'));

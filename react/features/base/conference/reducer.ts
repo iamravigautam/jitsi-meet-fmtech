@@ -32,7 +32,14 @@ import {
     SET_ROOM,
     SET_START_MUTED_POLICY,
     SET_START_REACTIONS_MUTED,
-    UPDATE_CONFERENCE_METADATA
+    UPDATE_CONFERENCE_METADATA,
+    SET_WAITING_TEXT,
+    SET_MEETING_TITLE,
+    SET_MIN_BITRATE,
+    SET_STD_BITRATE,
+    SET_MAX_BITRATE,
+    SET_LOBY_TITLE,
+    SET_LOBY_DISCRIPTION
 } from './actionTypes';
 import { isRoomValid } from './functions';
 
@@ -47,7 +54,14 @@ const DEFAULT_STATE = {
     membersOnly: undefined,
     metadata: undefined,
     password: undefined,
-    passwordRequired: undefined
+    passwordRequired: undefined,
+    waitingText: undefined,
+    meetingTitle: undefined,
+    lobyTitle: undefined,
+    lobyDescription: undefined,
+    minBitrate: undefined,
+    stdBitrate: undefined,
+    maxBitrate: undefined
 };
 
 export interface IConferenceMetadata {
@@ -133,6 +147,13 @@ export interface IJitsiConference {
     sendTones: Function;
     sessionId: string;
     setAssumedBandwidthBps: (value: number) => void;
+    setWaitingText: Function;
+    setMeetingTitle: Function;
+    setLobyTitle: Function;
+    setLobyDescription: Function;
+    setMinBitrate: Function;
+    setStdBitrate: Function;
+    setMaxBitrate: Function;
     setDesktopSharingFrameRate: Function;
     setDisplayName: Function;
     setIsSilent: Function;
@@ -155,6 +176,13 @@ export interface IConferenceState {
     authRequired?: IJitsiConference;
     conference?: IJitsiConference;
     conferenceTimestamp?: number;
+    waitingText?: string;
+    meetingTitle?: string;
+    lobyTitle?: string;
+    lobyDescription?: string;
+    minBitrate?: number;
+    stdBitrate?: number;
+    maxBitrate?: number;
     dataChannelOpen?: boolean;
     e2eeSupported?: boolean;
     error?: Error;
@@ -268,6 +296,27 @@ ReducerRegistry.register<IConferenceState>('features/base/conference',
 
         case SET_PENDING_SUBJECT_CHANGE:
             return set(state, 'pendingSubjectChange', action.subject);
+        
+            case SET_WAITING_TEXT:
+                return set(state, 'waitingText', action.waitingText);
+        
+                case SET_MEETING_TITLE:
+                return set(state, 'meetingTitle', action.meetingTitle);
+        
+                case SET_LOBY_TITLE:
+                return set(state, 'lobyTitle', action.lobyTitle);
+        
+                case SET_LOBY_DISCRIPTION:
+                return set(state, 'lobyDescription', action.lobyDescription);
+        
+                case SET_MIN_BITRATE:
+                return set(state, 'minBitrate', action.minBitrate);
+        
+                case SET_STD_BITRATE:
+                return set(state, 'stdBitrate', action.stdBitrate);
+        
+                case SET_MAX_BITRATE:
+                return set(state, 'maxBitrate', action.maxBitrate);
 
         case SET_ROOM:
             return _setRoom(state, action);

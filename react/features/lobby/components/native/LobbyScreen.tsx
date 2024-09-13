@@ -25,6 +25,8 @@ import AbstractLobbyScreen, {
     _mapStateToProps as abstractMapStateToProps } from '../AbstractLobbyScreen';
 
 import styles from './styles';
+import { getFeatureFlag } from "../../../base/flags/functions";
+import { MEETING_TITLE } from "../../../base/flags/constants";
 
 interface IProps extends AbstractProps {
 
@@ -37,6 +39,10 @@ interface IProps extends AbstractProps {
      * The room name.
      */
     _roomName: string;
+    _lobyTitle?: string;
+
+    _lobyDescription?: string;
+    _meetingTitle?: string;
 }
 
 /**
@@ -49,7 +55,7 @@ class LobbyScreen extends AbstractLobbyScreen<IProps> {
      * @inheritdoc
      */
     render() {
-        const { _aspectRatio, _roomName } = this.props;
+        const { _aspectRatio, _roomName, _meetingTitle } = this.props;
         let contentWrapperStyles;
         let contentContainerStyles;
         let largeVideoContainerStyles;
@@ -74,7 +80,7 @@ class LobbyScreen extends AbstractLobbyScreen<IProps> {
                         <Text
                             numberOfLines = { 1 }
                             style = { preJoinStyles.preJoinRoomName }>
-                            { _roomName }
+                         {_meetingTitle ? _meetingTitle : _roomName}
                         </Text>
                     </View>
                     <LargeVideo />
@@ -103,17 +109,32 @@ class LobbyScreen extends AbstractLobbyScreen<IProps> {
      * @inheritdoc
      */
     _renderJoining() {
+        const { _lobyTitle, _lobyDescription } = this.props;
         return (
             <View style = { styles.lobbyWaitingFragmentContainer }>
-                <Text style = { styles.lobbyTitle }>
-                    { this.props.t('lobby.joiningTitle') }
-                </Text>
+                {_lobyTitle != "" &&
+                _lobyTitle != undefined &&
+                _lobyTitle != null ? (
+                    <Text style={styles.lobbyTitle}>{_lobyTitle}</Text>
+                ) : (
+                    <Text style={styles.lobbyTitle}>
+                        {this.props.t("lobby.joiningTitle")}
+                    </Text>
+                )}
                 <LoadingIndicator
                     color = { BaseTheme.palette.icon01 }
                     style = { styles.loadingIndicator } />
-                <Text style = { styles.joiningMessage as TextStyle }>
-                    { this.props.t('lobby.joiningMessage') }
-                </Text>
+                {_lobyDescription != "" &&
+                _lobyDescription != undefined &&
+                _lobyDescription != null ? (
+                    <Text style={styles.joiningMessage as TextStyle}>
+                        {_lobyDescription}
+                    </Text>
+                ) : (
+                    <Text style={styles.joiningMessage as TextStyle}>
+                        {this.props.t("lobby.joiningMessage")}
+                    </Text>
+                )}
                 { this._renderStandardButtons() }
             </View>
         );
@@ -261,10 +282,18 @@ class LobbyScreen extends AbstractLobbyScreen<IProps> {
  * }}
  */
 function _mapStateToProps(state: IReduxState) {
+    const { lobyTitle, lobyDescription, meetingTitle } =
+    state["features/base/conference"];
     return {
         ...abstractMapStateToProps(state),
         _aspectRatio: state['features/base/responsive-ui'].aspectRatio,
-        _roomName: getConferenceName(state)
+        _roomName: getConferenceName(state),
+        _lobyTitle: lobyTitle,
+        _lobyDescription: lobyDescription,
+        _meetingTitle: meetingTitle,
+        _isMeetingTitleEnabled: Boolean(
+            getFeatureFlag(state, MEETING_TITLE, true)
+        ),
     };
 }
 

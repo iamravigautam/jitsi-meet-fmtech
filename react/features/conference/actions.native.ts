@@ -1,4 +1,5 @@
 import { IStore } from '../app/types';
+import { endConference } from '../base/conference/actions.any';
 import { hideDialog, openDialog } from '../base/dialog/actions';
 import AlertDialog from '../base/dialog/components/native/AlertDialog';
 import { getParticipantDisplayName } from '../base/participants/functions';
@@ -21,16 +22,18 @@ export function notifyKickedOut(participant: any, submit?: Function) {
 
             return;
         }
+        dispatch(endConference());
+        submit();
 
-        dispatch(openDialog(AlertDialog, {
-            contentKey: {
-                key: 'dialog.kickTitle',
-                params: {
-                    participantDisplayName: getParticipantDisplayName(getState, participant.getId())
-                }
-            },
-            onSubmit: submit
-        }));
+        // dispatch(openDialog(AlertDialog, {
+        //     contentKey: {
+        //         key: 'dialog.kickTitle',
+        //         params: {
+        //             participantDisplayName: getParticipantDisplayName(getState, participant.getId())
+        //         }
+        //     },
+        //     onSubmit: submit
+        // }));
     };
 }
 

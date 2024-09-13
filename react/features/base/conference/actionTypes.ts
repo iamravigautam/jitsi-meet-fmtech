@@ -324,6 +324,15 @@ export const SET_PENDING_SUBJECT_CHANGE = 'SET_PENDING_SUBJECT_CHANGE';
  */
 export const SET_ROOM = 'SET_ROOM';
 
+export const SET_WAITING_TEXT = 'SET_WAITING_TEXT';
+
+export const SET_MEETING_TITLE = 'SET_MEETING_TITLE';
+export const SET_LOBY_TITLE = 'SET_LOBY_TITLE';
+export const SET_LOBY_DISCRIPTION = 'SET_LOBY_DISCRIPTION';
+export const SET_MIN_BITRATE = 'SET_MIN_BITRATE';
+export const SET_STD_BITRATE = 'SET_STD_BITRATE';
+export const SET_MAX_BITRATE = 'SET_MAX_BITRATE';
+
 /**
  * The type of (redux) action which updates the current known status of the
  * moderator features for starting participants as audio or video muted.

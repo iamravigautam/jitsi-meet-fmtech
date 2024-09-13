@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createStartMutedConfigurationEvent } from '../../analytics/AnalyticsEvents';
 import { sendAnalytics } from '../../analytics/functions';
 import { IReduxState, IStore } from '../../app/types';
@@ -68,7 +69,15 @@ import {
     SET_ROOM,
     SET_START_MUTED_POLICY,
     SET_START_REACTIONS_MUTED,
-    UPDATE_CONFERENCE_METADATA
+    UPDATE_CONFERENCE_METADATA,
+    SET_WAITING_TEXT,
+    SET_MEETING_TITLE,
+    SET_MIN_BITRATE,
+    SET_STD_BITRATE,
+    SET_MAX_BITRATE,
+    SET_LOBY_TITLE,
+    SET_LOBY_DISCRIPTION,
+
 } from './actionTypes';
 import { setupVisitorStartupMedia } from './actions';
 import {
@@ -88,6 +97,7 @@ import {
 } from './functions';
 import logger from './logger';
 import { IConferenceMetadata, IJitsiConference } from './reducer';
+import { appNavigate } from '../../app/actions.native';
 
 /**
  * Adds conference (event) listeners.
@@ -692,11 +702,66 @@ export function endpointMessageReceived(participant: Object, data: Object) {
  *
  * @returns {Function}
  */
-export function endConference() {
-    return async (dispatch: IStore['dispatch'], getState: IStore['getState']) => {
-        const { conference } = getConferenceState(toState(getState));
+// export function endConference() {
+//     return async (dispatch: IStore['dispatch'], getState: IStore['getState']) => {
+//         const { conference } = getConferenceState(toState(getState));
 
-        conference?.end();
+//         conference?.end();
+//     };
+// }
+
+export function endConference() {
+    return async (
+        dispatch: IStore["dispatch"],
+        getState: IStore["getState"]
+    ) => {
+        const state = toState(getState());
+        const { conference } = getConferenceState(state);
+
+        if (conference) {
+            const participants = conference.getParticipants();
+            if (Array.isArray(participants) || participants instanceof Map) {
+                for (const [key, participant] of participants.entries()) {
+                    await AsyncStorage.setItem(
+                        "Kicker",
+                        participant._conference.room.myroomjid
+                    );
+
+                    if (participant && participant.getId) {
+                        try {
+                            console.log(
+                                `Kicking out participant: ${participant.getId()}`
+                            );
+                            conference.kickParticipant(participant.getId());
+                        } catch (error) {
+                            console.log(
+                                `Failed to kick out participant: ${error}`
+                            );
+                        }
+                    } else {
+                        console.log(
+                            "Encountered an invalid participant:",
+                            participant
+                        );
+                    }
+                }
+            } else {
+                console.log(
+                    "Participants is neither an array nor a map:",
+                    participants
+                );
+            }
+
+            try {
+                await conference.end();
+                dispatch(appNavigate(undefined));
+            } catch (error) {
+                console.log("Failed to end the conference:", error);
+            }
+        } else {
+            dispatch(appNavigate(undefined));
+            console.log("No active conference found.");
+        }
     };
 }
 
@@ -1014,6 +1079,116 @@ export function setSubject(subject: string) {
     };
 }
 
+export function setWaitingText(waitingText: string | undefined) {
+
+    return (dispatch: IStore["dispatch"], getState: IStore["getState"]) => {
+        const { conference } = getState()["features/base/conference"];
+
+        if (conference) {
+            conference.setWaitingText(waitingText || "");
+        } else {
+            dispatch({
+                type: SET_WAITING_TEXT,
+                waitingText,
+            });
+        }
+    };
+}
+
+export function setMeetingTitle(meetingTitle: string | undefined) {
+    
+    return (dispatch: IStore["dispatch"], getState: IStore["getState"]) => {
+        const { conference } = getState()["features/base/conference"];
+
+        if (conference) {
+            conference.setMeetingTitle(meetingTitle || "");
+        } else {
+            dispatch({
+                type: SET_MEETING_TITLE,
+                meetingTitle,
+            });
+        }
+    };
+}
+
+export function setLobyTitle(lobyTitle: string | undefined) {
+   
+    return (dispatch: IStore["dispatch"], getState: IStore["getState"]) => {
+        const { conference } = getState()["features/base/conference"];
+
+        if (conference) {
+            conference.setLobyTitle(lobyTitle || "");
+        } else {
+            dispatch({
+                type: SET_LOBY_TITLE,
+                lobyTitle,
+            });
+        }
+    };
+}
+
+export function setLobyDescription(lobyDescription: string | undefined) {
+    return (dispatch: IStore["dispatch"], getState: IStore["getState"]) => {
+        const { conference } = getState()["features/base/conference"];
+
+        if (conference) {
+            conference.setLobyDescription(lobyDescription || "");
+        } else {
+            dispatch({
+                type: SET_LOBY_DISCRIPTION,
+                lobyDescription,
+            });
+        }
+    };
+}
+
+export function setMinBitrate(minBitrate: number | undefined) {
+   
+    return (dispatch: IStore["dispatch"], getState: IStore["getState"]) => {
+        const { conference } = getState()["features/base/conference"];
+
+        if (conference) {
+            conference.setMinBitrate(minBitrate || "");
+        } else {
+            dispatch({
+                type: SET_MIN_BITRATE,
+                minBitrate,
+            });
+        }
+    };
+}
+
+export function setStdBitrate(stdBitrate: number | undefined) {
+   
+    return (dispatch: IStore["dispatch"], getState: IStore["getState"]) => {
+        const { conference } = getState()["features/base/conference"];
+
+        if (conference) {
+            conference.setStdBitrate(stdBitrate || "");
+        } else {
+            dispatch({
+                type: SET_STD_BITRATE,
+                stdBitrate,
+            });
+        }
+    };
+}
+
+export function setMaxBitrate(maxBitrate: number | undefined) {
+    
+    return (dispatch: IStore["dispatch"], getState: IStore["getState"]) => {
+        const { conference } = getState()["features/base/conference"];
+
+        if (conference) {
+            conference.setMaxBitrate(maxBitrate || "");
+        } else {
+            dispatch({
+                type: SET_MAX_BITRATE,
+                maxBitrate,
+            });
+        }
+    };
+}
 /**
  * Sets the conference local subject.
  *

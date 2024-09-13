@@ -1,5 +1,7 @@
 import { IReduxState, IStore } from '../app/types';
 import { getCurrentConference } from '../base/conference/functions';
+import { MODERATOR_OPTION } from '../base/flags/constants';
+import { getFeatureFlag } from '../base/flags/functions';
 import {
     PARTICIPANT_JOINED,
     PARTICIPANT_LEFT,
@@ -163,6 +165,12 @@ MiddlewareRegistry.register(store => next => action => {
     case PARTICIPANT_UPDATED: {
         const { disableModeratorIndicator } = state['features/base/config'];
 
+        const isModeratorEnable = getFeatureFlag(
+            state,
+            MODERATOR_OPTION,
+            false
+        );
+
         if (disableModeratorIndicator) {
             return next(action);
         }
@@ -177,7 +185,7 @@ MiddlewareRegistry.register(store => next => action => {
         const oldParticipant = getParticipantById(state, id);
         const oldRole = oldParticipant?.role;
 
-        if (oldRole && oldRole !== role && role === PARTICIPANT_ROLE.MODERATOR) {
+        if (!isModeratorEnable && oldRole && oldRole !== role && role === PARTICIPANT_ROLE.MODERATOR) {
 
             store.dispatch(showNotification({
                 titleKey: 'notify.moderator'

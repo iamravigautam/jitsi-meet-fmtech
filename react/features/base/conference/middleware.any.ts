@@ -47,7 +47,14 @@ import {
     SEND_TONES,
     SET_ASSUMED_BANDWIDTH_BPS,
     SET_PENDING_SUBJECT_CHANGE,
-    SET_ROOM
+    SET_ROOM,
+    SET_WAITING_TEXT,
+    SET_MEETING_TITLE,
+    SET_MAX_BITRATE,
+    SET_MIN_BITRATE,
+    SET_STD_BITRATE,
+    SET_LOBY_TITLE,
+    SET_LOBY_DISCRIPTION,
 } from './actionTypes';
 import {
     authStatusChanged,
@@ -56,7 +63,7 @@ import {
     createConference,
     setLocalSubject,
     setSubject,
-    updateConferenceMetadata
+    updateConferenceMetadata,
 } from './actions';
 import { CONFERENCE_LEAVE_REASONS } from './constants';
 import {
@@ -68,6 +75,7 @@ import {
 } from './functions';
 import logger from './logger';
 import { IConferenceMetadata } from './reducer';
+import { setLobyDescription, setLobyTitle, setMaxBitrate, setMeetingTitle, setMinBitrate, setStdBitrate, setWaitingText } from './actions.any';
 
 /**
  * Handler for before unload event.
@@ -284,7 +292,16 @@ function _conferenceFailed({ dispatch, getState }: IStore, next: Function, actio
 function _conferenceJoined({ dispatch, getState }: IStore, next: Function, action: AnyAction) {
     const result = next(action);
     const { conference } = action;
-    const { pendingSubjectChange } = getState()['features/base/conference'];
+    const {
+        pendingSubjectChange,
+        waitingText,
+        meetingTitle,
+        lobyTitle,
+        lobyDescription,
+        minBitrate,
+        stdBitrate,
+        maxBitrate,
+    } = getState()["features/base/conference"];
     const {
         disableBeforeUnloadHandlers = false,
         requireDisplayName
@@ -293,6 +310,13 @@ function _conferenceJoined({ dispatch, getState }: IStore, next: Function, actio
     dispatch(removeLobbyChatParticipant(true));
 
     pendingSubjectChange && dispatch(setSubject(pendingSubjectChange));
+    waitingText && dispatch(setWaitingText(waitingText));
+    meetingTitle && dispatch(setMeetingTitle(meetingTitle));
+    lobyTitle && dispatch(setLobyTitle(lobyTitle));
+    lobyDescription && dispatch(setLobyDescription(lobyDescription));
+    minBitrate && dispatch(setMinBitrate(minBitrate));
+    stdBitrate && dispatch(setStdBitrate(stdBitrate));
+    maxBitrate && dispatch(setMaxBitrate(maxBitrate));
 
     // FIXME: Very dirty solution. This will work on web only.
     // When the user closes the window or quits the browser, lib-jitsi-meet
@@ -470,12 +494,68 @@ function _connectionFailed({ dispatch, getState }: IStore, next: Function, actio
  */
 function _conferenceSubjectChanged({ dispatch, getState }: IStore, next: Function, action: AnyAction) {
     const result = next(action);
-    const { subject } = getState()['features/base/conference'];
+    const { subject,
+        waitingText,
+        meetingTitle,
+        lobyTitle,
+        lobyDescription,
+        minBitrate,
+        maxBitrate,
+        stdBitrate, } = getState()['features/base/conference'];
 
     if (subject) {
         dispatch({
             type: SET_PENDING_SUBJECT_CHANGE,
             subject: undefined
+        });
+    }
+
+    if (waitingText) {
+        dispatch({
+            type: SET_WAITING_TEXT,
+            waitingText: undefined,
+        });
+    }
+
+    if (meetingTitle) {
+        dispatch({
+            type: SET_MEETING_TITLE,
+            meetingTitle: undefined,
+        });
+    }
+
+    if (lobyTitle) {
+        dispatch({
+            type: SET_LOBY_TITLE,
+            lobyTitle: undefined,
+        });
+    }
+
+    if (lobyDescription) {
+        dispatch({
+            type: SET_LOBY_DISCRIPTION,
+            lobyDescription: undefined,
+        });
+    }
+
+    if (minBitrate) {
+        dispatch({
+            type: SET_MIN_BITRATE,
+            minBitrate: undefined,
+        });
+    }
+
+    if (stdBitrate) {
+        dispatch({
+            type: SET_STD_BITRATE,
+            stdBitrate: undefined,
+        });
+    }
+
+    if (maxBitrate) {
+        dispatch({
+            type: SET_MAX_BITRATE,
+            maxBitrate: undefined,
         });
     }
 
@@ -701,12 +781,48 @@ function _updateLocalParticipantInConference({ dispatch, getState }: IStore, nex
         }
 
         if ('role' in participant && participant.role === PARTICIPANT_ROLE.MODERATOR) {
-            const { pendingSubjectChange, subject } = getState()['features/base/conference'];
+            const { pendingSubjectChange, subject,
+                waitingText,
+                meetingTitle,
+                lobyTitle,
+                lobyDescription,
+                minBitrate,
+                stdBitrate,
+                maxBitrate, } = getState()['features/base/conference'];
 
             // When the local user role is updated to moderator and we have a pending subject change
             // which was not reflected we need to set it (the first time we tried was before becoming moderator).
             if (typeof pendingSubjectChange !== 'undefined' && pendingSubjectChange !== subject) {
                 dispatch(setSubject(pendingSubjectChange));
+            }
+            if (typeof waitingText !== "undefined") {
+                dispatch(setWaitingText(waitingText));
+            }
+
+            if (typeof meetingTitle !== "undefined") {
+                dispatch(setMeetingTitle(meetingTitle));
+            }
+
+            if (typeof lobyTitle !== "undefined") {
+                dispatch(setLobyTitle(lobyTitle));
+            }
+
+            if (typeof lobyDescription !== "undefined") {
+                dispatch(setLobyDescription(lobyDescription));
+            }
+
+            if (typeof minBitrate !== "undefined") {
+                dispatch(setMinBitrate(minBitrate));
+            }
+
+            if (typeof stdBitrate !== "undefined") {
+                console.log("--stdBitrate--707-", stdBitrate);
+                dispatch(setStdBitrate(stdBitrate));
+            }
+
+            if (typeof maxBitrate !== "undefined") {
+                console.log("--maxBitrate--707-", maxBitrate);
+                dispatch(setMaxBitrate(maxBitrate));
             }
         }
     }

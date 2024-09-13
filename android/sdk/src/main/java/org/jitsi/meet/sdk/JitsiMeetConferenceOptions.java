@@ -46,6 +46,22 @@ public class JitsiMeetConferenceOptions implements Parcelable {
      */
     private String token;
 
+      // set waiting area Text
+      private String waitingAreaText;
+
+      // set Title for meeting in jitsi room
+      private String meetingTitle;
+  
+      // set Title for lobby in jitsi room
+      private String lobyTitle;
+      
+      // set Title for lobby description in jitsi room
+      private String lobyDescription;
+  
+      private Integer minBitrate;
+      private Integer stdBitrate;
+      private Integer maxBitrate;
+
     /**
      * Config. See: https://github.com/jitsi/jitsi-meet/blob/master/config.js
      */
@@ -72,6 +88,30 @@ public class JitsiMeetConferenceOptions implements Parcelable {
     public String getToken() {
         return token;
     }
+    public String getWaitingAreaText() {
+        return waitingAreaText;
+    }
+
+    public String getMeetingTitle() {
+        return meetingTitle;
+    }
+
+    public String getLobyTitle() {
+        return lobyTitle;
+    }
+    public String getLobyDescription() {
+        return lobyDescription;
+    }
+
+    public Integer getMinBitrate() {
+        return minBitrate;
+    }
+    public Integer getStdBitrate() {
+        return stdBitrate;
+    }
+    public Integer getMaxBitrate() {
+        return maxBitrate;
+    }
 
     public Bundle getFeatureFlags() {
         return featureFlags;
@@ -88,6 +128,13 @@ public class JitsiMeetConferenceOptions implements Parcelable {
         private URL serverURL;
         private String room;
         private String token;
+        private String waitingAreaText;
+        private String meetingTitle;
+        private String lobyTitle;
+        private String lobyDescription;
+        private Integer minBitrate;
+        private Integer stdBitrate;
+        private Integer maxBitrate;
 
         private Bundle config;
         private Bundle featureFlags;
@@ -143,6 +190,47 @@ public class JitsiMeetConferenceOptions implements Parcelable {
             return this;
         }
 
+        public Builder setWaitingAreaText(String waitingAreaText) {
+            this.waitingAreaText = waitingAreaText;
+
+            return this;
+        }
+       
+        public Builder setMeetingTitle(String meetingTitle) {
+            this.meetingTitle = meetingTitle;
+
+            return this;
+        }
+
+        public Builder setLobyTitle(String lobyTitle) {
+            this.lobyTitle = lobyTitle;
+
+            return this;
+        }
+
+        public Builder setLobyDescription(String lobyDescription) {
+            this.lobyDescription = lobyDescription;
+
+            return this;
+        }
+
+        public Builder setMinBitrate(Integer minBitrate) {
+            this.minBitrate = minBitrate;
+
+            return this;
+        }
+
+        public Builder setStdBitrate(Integer stdBitrate) {
+            this.stdBitrate = stdBitrate;
+
+            return this;
+        }
+
+        public Builder setMaxBitrate(Integer maxBitrate) {
+            this.maxBitrate = maxBitrate;
+
+            return this;
+        }
         /**
          * Indicates the conference will be joined with the microphone muted.
          * @param audioMuted - Muted indication.
@@ -247,6 +335,13 @@ public class JitsiMeetConferenceOptions implements Parcelable {
             options.serverURL = this.serverURL;
             options.room = this.room;
             options.token = this.token;
+            options.waitingAreaText = this.waitingAreaText;
+            options.meetingTitle = this.meetingTitle;
+            options.lobyTitle = this.lobyTitle;
+            options.lobyDescription = this.lobyDescription;
+            options.minBitrate = this.minBitrate;
+            options.stdBitrate = this.stdBitrate;
+            options.maxBitrate = this.maxBitrate;
             options.config = this.config;
             options.featureFlags = this.featureFlags;
             options.userInfo = this.userInfo;
@@ -262,6 +357,13 @@ public class JitsiMeetConferenceOptions implements Parcelable {
         serverURL = (URL) in.readSerializable();
         room = in.readString();
         token = in.readString();
+        waitingAreaText = in.readString();
+        meetingTitle = in.readString();
+        lobyTitle = in.readString();
+        lobyDescription = in.readString();
+        minBitrate = in.readInt();
+        stdBitrate = in.readInt();
+        maxBitrate = in.readInt();
         config = in.readBundle();
         featureFlags = in.readBundle();
         userInfo = new JitsiMeetUserInfo(in.readBundle());
@@ -289,6 +391,31 @@ public class JitsiMeetConferenceOptions implements Parcelable {
         if (token != null) {
             urlProps.putString("jwt", token);
         }
+        if (waitingAreaText != null) {
+            props.putString("waitingAreaText", waitingAreaText);
+        }
+        if (meetingTitle != null) {
+            props.putString("meetingTitle", meetingTitle);
+        }
+        if (lobyTitle != null) {
+            props.putString("lobyTitle", lobyTitle);
+        }
+        if (lobyDescription != null) {
+            props.putString("lobyDescription", lobyDescription);
+        }
+
+        if (minBitrate != null) {
+            props.putInt("minBitrate", minBitrate);
+        }
+
+        if (stdBitrate != null) {
+            props.putInt("stdBitrate", stdBitrate);
+        }
+
+        if (maxBitrate != null) {
+            props.putInt("maxBitrate", maxBitrate);
+        }
+
 
         if (userInfo != null) {
             props.putBundle("userInfo", userInfo.asBundle());
@@ -320,6 +447,13 @@ public class JitsiMeetConferenceOptions implements Parcelable {
         dest.writeSerializable(serverURL);
         dest.writeString(room);
         dest.writeString(token);
+        dest.writeString(waitingAreaText);
+        dest.writeString(meetingTitle);
+        dest.writeString(lobyTitle);
+        dest.writeString(lobyDescription);
+        dest.writeInt(minBitrate);
+        dest.writeInt(stdBitrate);
+        dest.writeInt(maxBitrate);
         dest.writeBundle(config);
         dest.writeBundle(featureFlags);
         dest.writeBundle(userInfo != null ? userInfo.asBundle() : new Bundle());

@@ -6,9 +6,13 @@ import JitsiScreen from '../../../base/modal/components/JitsiScreen';
 import LoadingIndicator from '../../../base/react/components/native/LoadingIndicator';
 
 import { TEXT_COLOR, navigationStyles } from './styles';
+import { connect } from "react-redux";
 
+interface IProps {
+    _waitingText: string;
+}
 
-const ConnectingPage = () => {
+const ConnectingPage = (props: IProps) => {
     const { t } = useTranslation();
 
     return (
@@ -18,13 +22,28 @@ const ConnectingPage = () => {
                     <LoadingIndicator
                         color = { TEXT_COLOR }
                         size = 'large' />
+                   {props._waitingText!='' && props._waitingText!=undefined && props._waitingText!=null ? 
+                    
                     <Text style = { navigationStyles.connectingScreenText }>
-                        { t('connectingOverlay.joiningRoom') }
-                    </Text>
+                       { props._waitingText }
+                   </Text> 
+                   :
+                   <Text style={navigationStyles.connectingScreenText}>
+                   {t("connectingOverlay.joiningRoom")}
+               </Text>
+                   }
                 </SafeAreaView>
             </View>
         </JitsiScreen>
     );
 };
 
-export default ConnectingPage;
+function _mapStateToProps(state: IReduxState) {
+    const { waitingText } = state["features/base/conference"];
+
+    return {
+        _waitingText: waitingText,
+    };
+}
+
+export default connect(_mapStateToProps)(ConnectingPage);

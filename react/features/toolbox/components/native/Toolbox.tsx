@@ -21,6 +21,11 @@ import RaiseHandButton from './RaiseHandButton';
 import ScreenSharingButton from './ScreenSharingButton';
 import VideoMuteButton from './VideoMuteButton';
 import styles from './styles';
+import {
+    DIRECT_JOIN_MEETING_ENABLED,
+    END_MEETING_OPTIONS,
+} from "../../../base/flags/constants";
+import { getFeatureFlag } from "../../../base/flags/functions";
 
 /**
  * The type of {@link Toolbox}'s React {@code Component} props.
@@ -56,6 +61,12 @@ interface IProps {
      * The width of the screen.
      */
     _width: number;
+
+    _numberOfParticipants: number;
+
+    _isEndMeetingOptions: boolean;
+
+    _isDirectJoin: boolean;
 }
 
 /**
@@ -65,7 +76,7 @@ interface IProps {
  * @returns {React$Element}
  */
 function Toolbox(props: IProps) {
-    const { _endConferenceSupported, _shouldDisplayReactionsButtons, _styles, _visible, _iAmVisitor, _width } = props;
+    const { _endConferenceSupported, _shouldDisplayReactionsButtons, _styles, _visible, _iAmVisitor, _width, _isEndMeetingOptions, } = props;
 
     if (!_visible) {
         return null;
@@ -126,8 +137,9 @@ function Toolbox(props: IProps) {
                     styles = { buttonStylesBorderless }
                     toggledStyles = { toggledButtonStyles } />
                 }
-                { _endConferenceSupported
-                    ? <HangupMenuButton />
+                { 
+                // _endConferenceSupported
+                !_isEndMeetingOptions  ? <HangupMenuButton />
                     : <HangupButton
                         styles = { hangupButtonStyles } />
                 }
@@ -148,6 +160,7 @@ function Toolbox(props: IProps) {
 function _mapStateToProps(state: IReduxState) {
     const { conference } = state['features/base/conference'];
     const endConferenceSupported = conference?.isEndConferenceSupported();
+    const numberOfParticipants = conference?.getParticipantCount();
 
     return {
         _endConferenceSupported: Boolean(endConferenceSupported),
@@ -155,7 +168,13 @@ function _mapStateToProps(state: IReduxState) {
         _visible: isToolboxVisible(state),
         _iAmVisitor: iAmVisitor(state),
         _width: state['features/base/responsive-ui'].clientWidth,
-        _shouldDisplayReactionsButtons: shouldDisplayReactionsButtons(state)
+        _shouldDisplayReactionsButtons: shouldDisplayReactionsButtons(state),
+        _isEndMeetingOptions: Boolean(
+            getFeatureFlag(state, END_MEETING_OPTIONS, false)
+        ),
+        _isDirectJoin: Boolean(
+            getFeatureFlag(state, DIRECT_JOIN_MEETING_ENABLED, false)
+        )
     };
 }
 

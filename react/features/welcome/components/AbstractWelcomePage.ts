@@ -3,7 +3,7 @@ import { generateRoomWithoutSeparator } from '@jitsi/js-utils/random';
 import { Component } from 'react';
 import { WithTranslation } from 'react-i18next';
 
-import { createWelcomePageEvent } from '../../analytics/AnalyticsEvents';
+import { createWelcomePageEvent, createDirectJoinMeetingEvent,} from '../../analytics/AnalyticsEvents';
 import { sendAnalytics } from '../../analytics/functions';
 import { appNavigate } from '../../app/actions';
 import { IReduxState, IStore } from '../../app/types';
@@ -12,7 +12,8 @@ import isInsecureRoomName from '../../base/util/isInsecureRoomName';
 import { isCalendarEnabled } from '../../calendar-sync/functions';
 import { isUnsafeRoomWarningEnabled } from '../../prejoin/functions';
 import { isRecentListEnabled } from '../../recent-list/functions';
-
+import { getFeatureFlag } from "../../base/flags/functions";
+import { DIRECT_JOIN_MEETING_ENABLED } from "../../base/flags/constants";
 /**
  * {@code AbstractWelcomePage}'s React {@code Component} prop types.
  */
@@ -52,6 +53,8 @@ export interface IProps extends WithTranslation {
      * The current settings.
      */
     _settings: Object;
+
+    _isDirectJoin: boolean;
 
     /**
      * The Redux dispatch Function.
@@ -137,6 +140,9 @@ export class AbstractWelcomePage<P extends IProps> extends Component<P, IState> 
     componentDidMount() {
         this._mounted = true;
         sendAnalytics(createWelcomePageEvent('viewed', undefined, { value: 1 }));
+        sendAnalytics(
+            createDirectJoinMeetingEvent("directJoin", undefined, { value: 1 })
+        );
     }
 
     /**
@@ -213,6 +219,13 @@ export class AbstractWelcomePage<P extends IProps> extends Component<P, IState> 
                 room
             }));
 
+            sendAnalytics(
+                createDirectJoinMeetingEvent("clicked", "joinButton", {
+                    isGenerated: !this.state.room,
+                    room,
+                })
+            );
+
         if (room) {
             this.setState({ joining: true });
 
@@ -221,7 +234,8 @@ export class AbstractWelcomePage<P extends IProps> extends Component<P, IState> 
             const onAppNavigateSettled
                 = () => this._mounted && this.setState({ joining: false });
 
-            this.props.dispatch(appNavigate(room))
+                this.props
+                .dispatch(appNavigate(room,{},this.props._isDirectJoin))
                 .then(onAppNavigateSettled, onAppNavigateSettled);
         }
     }
@@ -293,6 +307,9 @@ export function _mapStateToProps(state: IReduxState) {
         _moderatedRoomServiceUrl: state['features/base/config'].moderatedRoomServiceUrl,
         _recentListEnabled: isRecentListEnabled(),
         _room: state['features/base/conference'].room ?? '',
-        _settings: state['features/base/settings']
+        _settings: state['features/base/settings'],
+        _isDirectJoin: Boolean(
+            getFeatureFlag(state, DIRECT_JOIN_MEETING_ENABLED, false)
+        ),
     };
 }

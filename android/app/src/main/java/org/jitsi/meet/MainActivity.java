@@ -72,6 +72,10 @@ public class MainActivity extends JitsiMeetActivity {
      * Default URL as could be obtained from RestrictionManager
      */
     private String defaultURL;
+     // Get the values of minBitrate, stdBitrate, and maxBitrate from your React Native code
+     int minBitrate = getMinBitrateFromRN();
+     int stdBitrate = getStdBitrateFromRN();
+     int maxBitrate = getMaxBitrateFromRN();
 
     // JitsiMeetActivity overrides
     //
@@ -149,11 +153,38 @@ public class MainActivity extends JitsiMeetActivity {
         JitsiMeetConferenceOptions defaultOptions
             = new JitsiMeetConferenceOptions.Builder()
             .setServerURL(buildURL(defaultURL))
+            .setWaitingAreaText("Please wait... in waiting area while meeting starting.") // set custom Text for waiting area
+            .setMeetingTitle("My Title") // set meeting title
+            .setLobyTitle("Lobby Title") // set lobby title
+            .setLobyDescription("Lobby Description")  // set lobby description
+            .setFeatureFlag("backButtonHandler.enabled", true) // set back button on meeting room
+            .setFeatureFlag("directJoin.enabled", true) // set Lobby screen disabled or enabled
+            .setFeatureFlag("moderatorOption.enabled", true) // set moderator option disabled or enabled
+            .setFeatureFlag("endMeetingOptions.enabled", true) // set options for end meeting
+            .setMinBitrate(minBitrate) // set minimum bitrate
+            .setStdBitrate(stdBitrate) // set standard bitrate
+            .setMaxBitrate(maxBitrate) // set maximum bitrate
             .setFeatureFlag("welcomepage.enabled", true)
             .setFeatureFlag("server-url-change.enabled", !configurationByRestrictions)
             .build();
         JitsiMeet.setDefaultConferenceOptions(defaultOptions);
     }
+
+    private int getMinBitrateFromRN() {
+        // Implement the logic to get minBitrate from React Native
+        return 100000; // Replace with the actual value
+    }
+
+    private int getStdBitrateFromRN() {
+        // Implement the logic to get stdBitrate from React Native
+        return 300000; // Replace with the actual value
+    }
+
+    private int getMaxBitrateFromRN() {
+        // Implement the logic to get maxBitrate from React Native
+        return 1000000; // Replace with the actual value
+    }
+
 
     private void resolveRestrictions() {
         RestrictionsManager manager =

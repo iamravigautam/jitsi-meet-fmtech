@@ -48,7 +48,7 @@ export * from './actions.any';
  * @param {Object} [options] - Options.
  * @returns {Function}
  */
-export function appNavigate(uri?: string, options: IReloadNowOptions = {}) {
+export function appNavigate(uri?: string, options: IReloadNowOptions = {}, _isDirectJoin?: boolean) {
     logger.info(`appNavigate to ${uri}`);
 
     return async (dispatch: IStore['dispatch'], getState: IStore['getState']) => {
@@ -92,7 +92,11 @@ export function appNavigate(uri?: string, options: IReloadNowOptions = {}) {
                     return;
                 }
             } else {
-                navigateRoot(screen.connecting);
+                navigateRoot(screen.connecting, {
+                    roomId: room,
+                    hostname: hostname,
+                    host: host,
+                });
             }
         }
 
@@ -163,11 +167,30 @@ export function appNavigate(uri?: string, options: IReloadNowOptions = {}) {
         dispatch(createDesiredLocalTracks());
         dispatch(clearNotifications());
 
+        if (_isDirectJoin) {
+            console.log("----directjoin---201");
+            dispatch(connect());
+            navigateRoot(screen.conference.root);
+
+            return;
+        } else {
+            console.log("----prejoin---206");
+            navigateRoot(screen.preJoin);
+        }
+
         if (!options.hidePrejoin && isPrejoinPageEnabled(getState())) {
             if (isUnsafeRoomWarningEnabled(getState()) && isInsecureRoomName(room)) {
                 navigateRoot(screen.unsafeRoomWarning);
             } else {
-                navigateRoot(screen.preJoin);
+                // navigateRoot(screen.preJoin);
+                if (_isDirectJoin) {
+                    console.log("----directjoin---220");
+                    dispatch(connect());
+                    navigateRoot(screen.conference.root);
+                } else {
+                    console.log("----prejoin---222");
+                    navigateRoot(screen.preJoin);
+                }
             }
         } else {
             dispatch(connect());

@@ -339,6 +339,7 @@ function _handleConnectionServiceFailure(state: IReduxState) {
         // fallback to not using ConnectionService.
         // NOTE: We are not storing this in Settings, in case it's a transient issue, as far fetched as
         // that may be.
+        console.log("----AudioMode---342--", AudioMode)
         if (AudioMode.setUseConnectionService) {
             AudioMode.setUseConnectionService(false);
 

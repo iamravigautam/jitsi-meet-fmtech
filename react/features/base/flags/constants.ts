@@ -284,3 +284,38 @@ export const VIDEO_SHARE_BUTTON_ENABLED = 'video-share.enabled';
  * Default: disabled (false).
  */
 export const WELCOME_PAGE_ENABLED = 'welcomepage.enabled';
+
+// set waiting area text
+export const WAITING_AREA_TEXT = 'waitingAreaText.enabled';
+
+// set meeting title
+export const MEETING_TITLE = 'meetingTitle.enabled';
+
+// set loby title
+export const LOBY_TITLE = 'lobyTitle.enabled';
+
+// set loby Description
+export const LOBY_DESCRIPTION = 'lobyDescription.enabled';
+
+// set backButtonHandler
+export const BACK_BUTTON_HANDLER = 'backButtonHandler.enabled';
+
+// set direct join jitsi
+export const DIRECT_JOIN_MEETING_ENABLED = 'directJoin.enabled';
+
+// set moderator join jitsi
+export const MODERATOR_OPTION = 'moderatorOption.enabled';
+
+// set options for end meeting
+export const END_MEETING_OPTIONS = 'endMeetingOptions.enabled';
+
+// set Bitrate
+
+export const MIN_BITRATE = 'minBitrate';
+
+export const STD_BITRATE = 'stdBitrate';
+
+export const MAX_BITRATE = 'maxBitrate';
+
+
+

@@ -1,25 +1,21 @@
-import { NativeEventEmitter, NativeModules } from 'react-native';
-import { AnyAction } from 'redux';
+import { NativeEventEmitter, NativeModules } from "react-native";
+import { AnyAction } from "redux";
 
-import { IStore } from '../../app/types';
-import { APP_WILL_MOUNT, APP_WILL_UNMOUNT } from '../../base/app/actionTypes';
-import { SET_AUDIO_ONLY } from '../../base/audio-only/actionTypes';
-import {
-    CONFERENCE_FAILED,
-    CONFERENCE_JOINED,
-    CONFERENCE_LEFT
-} from '../../base/conference/actionTypes';
-import { getCurrentConference } from '../../base/conference/functions';
-import { AUDIO_FOCUS_DISABLED } from '../../base/flags/constants';
-import { getFeatureFlag } from '../../base/flags/functions';
-import MiddlewareRegistry from '../../base/redux/MiddlewareRegistry';
+import { IStore } from "../../app/types";
+import { APP_WILL_MOUNT, APP_WILL_UNMOUNT } from "../../base/app/actionTypes";
+import { SET_AUDIO_ONLY } from "../../base/audio-only/actionTypes";
+import { CONFERENCE_FAILED, CONFERENCE_JOINED, CONFERENCE_LEFT, CONFERENCE_WILL_JOIN } from "../../base/conference/actionTypes";
+import { getCurrentConference } from "../../base/conference/functions";
+import { AUDIO_FOCUS_DISABLED } from "../../base/flags/constants";
+import { getFeatureFlag } from "../../base/flags/functions";
+import MiddlewareRegistry from "../../base/redux/MiddlewareRegistry";
 
-import { _SET_AUDIOMODE_DEVICES, _SET_AUDIOMODE_SUBSCRIPTIONS } from './actionTypes';
-import logger from './logger';
+import { _SET_AUDIOMODE_DEVICES, _SET_AUDIOMODE_SUBSCRIPTIONS } from "./actionTypes";
+import logger from "./logger";
 
 const { AudioMode } = NativeModules;
 const AudioModeEmitter = new NativeEventEmitter(AudioMode);
-
+console.log("--AudioModeEmitter-22-", AudioModeEmitter);
 /**
  * Middleware that captures conference actions and sets the correct audio mode
  * based on the type of conference. Audio-only conferences don't use the speaker
@@ -28,38 +24,44 @@ const AudioModeEmitter = new NativeEventEmitter(AudioMode);
  * @param {Store} store - The redux store.
  * @returns {Function}
  */
-MiddlewareRegistry.register(store => next => action => {
+MiddlewareRegistry.register((store) => (next) => (action) => {
     /* eslint-disable no-fallthrough */
 
     switch (action.type) {
-    case _SET_AUDIOMODE_SUBSCRIPTIONS:
-        _setSubscriptions(store);
-        break;
-    case APP_WILL_UNMOUNT: {
-        store.dispatch({
-            type: _SET_AUDIOMODE_SUBSCRIPTIONS,
-            subscriptions: undefined
-        });
-        break;
-    }
-    case APP_WILL_MOUNT:
-        _appWillMount(store);
-    case CONFERENCE_FAILED: // eslint-disable-line no-fallthrough
-    case CONFERENCE_LEFT:
+        case _SET_AUDIOMODE_SUBSCRIPTIONS:
+            _setSubscriptions(store);
+            break;
+        case APP_WILL_UNMOUNT: {
+            store.dispatch({
+                type: _SET_AUDIOMODE_SUBSCRIPTIONS,
+                subscriptions: undefined,
+            });
+            break;
+        }
+        case APP_WILL_MOUNT:
+            _appWillMount(store);
+              // Set default audio mode when app mounts
+              _setDefaultAudioMode();
+              break;
+              case CONFERENCE_WILL_JOIN:
+                // Keep default audio mode when entering lobby
+                _setDefaultAudioMode();
+                break;
+        case CONFERENCE_FAILED: // eslint-disable-line no-fallthrough
+        case CONFERENCE_LEFT:
 
-    /*
-    * NOTE: We moved the audio mode setting from CONFERENCE_WILL_JOIN to
-    * CONFERENCE_JOINED because in case of a locked room, the app goes
-    * through CONFERENCE_FAILED state and gets to CONFERENCE_JOINED only
-    * after a correct password, so we want to make sure we have the correct
-    * audio mode set up when we finally get to the conf, but also make sure
-    * that the app is in the right audio mode if the user leaves the
-    * conference after the password prompt appears.
-    */
-    case CONFERENCE_JOINED:
-    case SET_AUDIO_ONLY:
-        return _updateAudioMode(store, next, action);
-
+        /*
+         * NOTE: We moved the audio mode setting from CONFERENCE_WILL_JOIN to
+         * CONFERENCE_JOINED because in case of a locked room, the app goes
+         * through CONFERENCE_FAILED state and gets to CONFERENCE_JOINED only
+         * after a correct password, so we want to make sure we have the correct
+         * audio mode set up when we finally get to the conf, but also make sure
+         * that the app is in the right audio mode if the user leaves the
+         * conference after the password prompt appears.
+         */
+        case CONFERENCE_JOINED:
+        case SET_AUDIO_ONLY:
+            return _updateAudioMode(store, next, action);
     }
 
     /* eslint-enable no-fallthrough */
@@ -77,13 +79,13 @@ MiddlewareRegistry.register(store => next => action => {
  * @returns {void}
  */
 function _appWillMount(store: IStore) {
-    const subscriptions = [
-        AudioModeEmitter.addListener(AudioMode.DEVICE_CHANGE_EVENT, _onDevicesUpdate, store)
-    ];
+    const subscriptions = [AudioModeEmitter.addListener(AudioMode.DEVICE_CHANGE_EVENT, _onDevicesUpdate, store)];
+
+    console.log("--subscriptions--84-", subscriptions);
 
     store.dispatch({
         type: _SET_AUDIOMODE_SUBSCRIPTIONS,
-        subscriptions
+        subscriptions,
     });
 }
 
@@ -100,7 +102,7 @@ function _onDevicesUpdate(devices: any) {
 
     dispatch({
         type: _SET_AUDIOMODE_DEVICES,
-        devices
+        devices,
     });
 }
 
@@ -115,7 +117,7 @@ function _onDevicesUpdate(devices: any) {
  * @returns {void}
  */
 function _setSubscriptions({ getState }: IStore) {
-    const { subscriptions } = getState()['features/mobile/audio-mode'];
+    const { subscriptions } = getState()["features/mobile/audio-mode"];
 
     if (subscriptions) {
         for (const subscription of subscriptions) {
@@ -136,22 +138,64 @@ function _setSubscriptions({ getState }: IStore) {
  * @private
  * @returns {*} The value returned by {@code next(action)}.
  */
+
+function _setDefaultAudioMode() {
+    AudioMode.setMode(AudioMode.DEFAULT).catch((err: any) =>
+        logger.error(`Failed to set default audio mode: ${err}`)
+    );
+}
+
 function _updateAudioMode({ getState }: IStore, next: Function, action: AnyAction) {
     const result = next(action);
-    const state = getState();
-    const conference = getCurrentConference(state);
-    const { enabled: audioOnly } = state['features/base/audio-only'];
-    let mode: string;
 
+    const state = getState();
+   
+    const conference = getCurrentConference(state);
+  
+    const { enabled: audioOnly } = state["features/base/audio-only"];
+    console.log("--audioOnly--", audioOnly);
+    let mode: string;
+    console.log("--mode--", mode);
+    console.log("--AudioMode-145-", AudioMode, action.type);
     if (getFeatureFlag(state, AUDIO_FOCUS_DISABLED, false)) {
         return result;
-    } else if (conference) {
+    } else if (conference && action.type === CONFERENCE_JOINED) {
         mode = audioOnly ? AudioMode.AUDIO_CALL : AudioMode.VIDEO_CALL;
+        console.log("--mode-154-", mode);
     } else {
         mode = AudioMode.DEFAULT;
+        console.log("--mode-157-", mode);
     }
 
     AudioMode.setMode(mode).catch((err: any) => logger.error(`Failed to set audio mode ${String(mode)}: ${err}`));
 
     return result;
 }
+// function _updateAudioMode({ getState }: IStore, next: Function, action: AnyAction) {
+//     const result = next(action);
+//     const state = getState();
+//     const conference = getCurrentConference(state);
+//     const { enabled: audioOnly } = state["features/base/audio-only"];
+//     let mode: string = AudioMode.DEFAULT; // Set a default mode initially
+
+//     if (getFeatureFlag(state, AUDIO_FOCUS_DISABLED, false)) {
+//         return result;
+//     } else if (conference) {
+//         const participants = conference.getParticipants(); // Get the list of participants
+//         console.log("--participants--", participants);
+
+//         if (participants.length === 1) {
+//             // If there is only one participant, set mode to DEFAULT
+//             mode = AudioMode.DEFAULT;
+//             console.log("--mode-157 (1 participant)--", mode);
+//         } else if (participants.length > 1) {
+//             // If more than one participant, set mode based on audio-only or video call
+//             mode = audioOnly ? AudioMode.AUDIO_CALL : AudioMode.VIDEO_CALL;
+//             console.log("--mode-154 (more than 1 participant)--", mode);
+//         }
+//     }
+
+//     AudioMode.setMode(mode).catch((err: any) => logger.error(`Failed to set audio mode ${String(mode)}: ${err}`));
+
+//     return result;
+// }

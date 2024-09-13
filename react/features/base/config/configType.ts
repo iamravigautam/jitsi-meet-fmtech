@@ -346,6 +346,8 @@ export interface IConfig {
     enableTcc?: boolean;
     enableWebHIDFeature?: boolean;
     enableWelcomePage?: boolean;
+    enableWaitingText?: boolean;
+    enableMeetingText?: boolean;
     etherpad_base?: string;
     faceLandmarks?: {
         captureInterval?: number;
@@ -607,6 +609,50 @@ export interface IConfig {
     websocketKeepAliveUrl?: string;
     welcomePage?: {
         customUrl?: string;
+        disabled?: boolean;
+    };
+    directJoinMeeting?: {
+        directJoin?: string;
+        disabled?: boolean;
+    };
+    moderatorOptionHandler?: {
+        moderatorOption?: string;
+        disabled?: boolean;
+    };
+    backButtonHandler?: {
+        backButton?: string;
+        disabled?: boolean;
+    };
+    endMeetingOptionsHandler?: {
+        endMeetingOptions?: string;
+        disabled?: boolean;
+    };
+    TextForWaitingArea?: {
+        waitingAreaText?: string;
+        disabled?: boolean;
+    };
+    TextForMeetingTitle?: {
+        meetingTitle?: string;
+        disabled?: boolean;
+    };
+    TextForLobyTitle?: {
+        lobyTitle?: string;
+        disabled?: boolean;
+    };
+    TextForLobyDescription?: {
+        lobyDescription?: string;
+        disabled?: boolean;
+    };
+    minBitrateValue?: {
+        minBitrate?: number;
+        disabled?: boolean;
+    };
+    stdBitrateValue?: {
+        stdBitrate?: number;
+        disabled?: boolean;
+    };
+    maxBitrateValue?: {
+        maxBitrate?: number;
         disabled?: boolean;
     };
     whiteboard?: IWhiteboardConfig;
