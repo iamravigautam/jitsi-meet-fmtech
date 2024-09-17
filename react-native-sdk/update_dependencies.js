@@ -6,7 +6,9 @@ const path = require('path');
 const semver = require('semver');
 
 
-const pathToPackageJSON = path.resolve(__dirname, '../../../package.json');
+// const pathToPackageJSON = path.resolve(__dirname, '../../../package.json');
+
+const pathToPackageJSON = path.resolve(__dirname, '../../package.json');
 
 const packageJSON = require(pathToPackageJSON);
 

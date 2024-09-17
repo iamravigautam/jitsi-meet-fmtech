@@ -1,59 +1,47 @@
-import { AnyAction } from 'redux';
+import { AnyAction } from "redux";
 
 import {
     createStartAudioOnlyEvent,
     createStartMutedConfigurationEvent,
     createSyncTrackStateEvent,
-    createTrackMutedEvent
-} from '../../analytics/AnalyticsEvents';
-import { sendAnalytics } from '../../analytics/functions';
-import { IStore } from '../../app/types';
-import { APP_STATE_CHANGED } from '../../mobile/background/actionTypes';
-import { showWarningNotification } from '../../notifications/actions';
-import { NOTIFICATION_TIMEOUT_TYPE } from '../../notifications/constants';
-import { isForceMuted } from '../../participants-pane/functions';
-import { isScreenMediaShared } from '../../screen-share/functions';
-import { SET_AUDIO_ONLY } from '../audio-only/actionTypes';
-import { setAudioOnly } from '../audio-only/actions';
-import { SET_ROOM } from '../conference/actionTypes';
-import { isRoomValid } from '../conference/functions';
-import { getLocalParticipant } from '../participants/functions';
-import MiddlewareRegistry from '../redux/MiddlewareRegistry';
-import { getPropertyValue } from '../settings/functions.any';
-import { TRACK_ADDED } from '../tracks/actionTypes';
-import { destroyLocalTracks } from '../tracks/actions.any';
+    createTrackMutedEvent,
+} from "../../analytics/AnalyticsEvents";
+import { sendAnalytics } from "../../analytics/functions";
+import { IStore } from "../../app/types";
+import { APP_STATE_CHANGED } from "../../mobile/background/actionTypes";
+import { showWarningNotification } from "../../notifications/actions";
+import { NOTIFICATION_TIMEOUT_TYPE } from "../../notifications/constants";
+import { isForceMuted } from "../../participants-pane/functions";
+import { isScreenMediaShared } from "../../screen-share/functions";
+import { SET_AUDIO_ONLY } from "../audio-only/actionTypes";
+import { setAudioOnly } from "../audio-only/actions";
+import { SET_ROOM } from "../conference/actionTypes";
+import { isRoomValid } from "../conference/functions";
+import { getLocalParticipant } from "../participants/functions";
+import MiddlewareRegistry from "../redux/MiddlewareRegistry";
+import { getPropertyValue } from "../settings/functions.any";
+import { TRACK_ADDED } from "../tracks/actionTypes";
+import { destroyLocalTracks } from "../tracks/actions.any";
 import {
     getCameraFacingMode,
     isLocalTrackMuted,
     isLocalVideoTrackDesktop,
-    setTrackMuted
-} from '../tracks/functions.any';
-import { ITrack } from '../tracks/types';
+    setTrackMuted,
+} from "../tracks/functions.any";
+import { ITrack } from "../tracks/types";
 
 import {
     SET_AUDIO_MUTED,
     SET_AUDIO_UNMUTE_PERMISSIONS,
     SET_SCREENSHARE_MUTED,
     SET_VIDEO_MUTED,
-    SET_VIDEO_UNMUTE_PERMISSIONS
-} from './actionTypes';
-import {
-    setAudioMuted,
-    setCameraFacingMode,
-    setScreenshareMuted,
-    setVideoMuted
-} from './actions';
-import {
-    MEDIA_TYPE,
-    SCREENSHARE_MUTISM_AUTHORITY,
-    VIDEO_MUTISM_AUTHORITY
-} from './constants';
-import { getStartWithAudioMuted, getStartWithVideoMuted } from './functions';
-import logger from './logger';
-import {
-    _AUDIO_INITIAL_MEDIA_STATE,
-    _VIDEO_INITIAL_MEDIA_STATE
-} from './reducer';
+    SET_VIDEO_UNMUTE_PERMISSIONS,
+} from "./actionTypes";
+import { setAudioMuted, setCameraFacingMode, setScreenshareMuted, setVideoMuted } from "./actions";
+import { MEDIA_TYPE, SCREENSHARE_MUTISM_AUTHORITY, VIDEO_MUTISM_AUTHORITY } from "./constants";
+import { getStartWithAudioMuted, getStartWithVideoMuted } from "./functions";
+import logger from "./logger";
+import { _AUDIO_INITIAL_MEDIA_STATE, _VIDEO_INITIAL_MEDIA_STATE } from "./reducer";
 
 /**
  * Implements the entry point of the middleware of the feature base/media.
@@ -61,88 +49,101 @@ import {
  * @param {Store} store - The redux store.
  * @returns {Function}
  */
-MiddlewareRegistry.register(store => next => action => {
+MiddlewareRegistry.register((store) => (next) => (action) => {
     switch (action.type) {
-    case APP_STATE_CHANGED:
-        return _appStateChanged(store, next, action);
+        case APP_STATE_CHANGED:
+            return _appStateChanged(store, next, action);
 
-    case SET_AUDIO_ONLY:
-        return _setAudioOnly(store, next, action);
+        case SET_AUDIO_ONLY:
+            return _setAudioOnly(store, next, action);
 
-    case SET_ROOM:
-        return _setRoom(store, next, action);
+        case SET_ROOM:
+            return _setRoom(store, next, action);
 
-    case TRACK_ADDED: {
-        const result = next(action);
-        const { track } = action;
+        case TRACK_ADDED: {
+            const result = next(action);
+            const { track } = action;
 
-        // Don't sync track mute state with the redux store for screenshare
-        // since video mute state represents local camera mute state only.
-        track.local && track.videoType !== 'desktop'
-            && _syncTrackMutedState(store, track);
+            // Don't sync track mute state with the redux store for screenshare
+            // since video mute state represents local camera mute state only.
+            track.local && track.videoType !== "desktop" && _syncTrackMutedState(store, track);
 
-        return result;
-    }
-
-    case SET_AUDIO_MUTED: {
-        const state = store.getState();
-        const participant = getLocalParticipant(state);
-
-        if (!action.muted && isForceMuted(participant, MEDIA_TYPE.AUDIO, state)) {
-            return;
+            return result;
         }
-        break;
-    }
 
-    case SET_AUDIO_UNMUTE_PERMISSIONS: {
-        const { blocked, skipNotification } = action;
-        const state = store.getState();
-        const tracks = state['features/base/tracks'];
-        const isAudioMuted = isLocalTrackMuted(tracks, MEDIA_TYPE.AUDIO);
+        case SET_AUDIO_MUTED: {
+            const state = store.getState();
+            const participant = getLocalParticipant(state);
+            console.log("-participant--", participant);
 
-        if (blocked && isAudioMuted && !skipNotification) {
-            store.dispatch(showWarningNotification({
-                descriptionKey: 'notify.audioUnmuteBlockedDescription',
-                titleKey: 'notify.audioUnmuteBlockedTitle'
-            }, NOTIFICATION_TIMEOUT_TYPE.MEDIUM));
+            if (!action.muted && isForceMuted(participant, MEDIA_TYPE.AUDIO, state)) {
+                console.log("-participant-80-");
+                return;
+            }
+            break;
         }
-        break;
-    }
 
-    case SET_SCREENSHARE_MUTED: {
-        const state = store.getState();
-        const participant = getLocalParticipant(state);
-
-        if (!action.muted && isForceMuted(participant, MEDIA_TYPE.SCREENSHARE, state)) {
-            return;
+        case SET_AUDIO_UNMUTE_PERMISSIONS: {
+            const { blocked, skipNotification } = action;
+            const state = store.getState();
+            const tracks = state["features/base/tracks"];
+            console.log("-tracks-90-", tracks);
+            const isAudioMuted = isLocalTrackMuted(tracks, MEDIA_TYPE.AUDIO);
+            console.log("-isAudioMuted-92-", isAudioMuted);
+            if (blocked && isAudioMuted && !skipNotification) {
+                store.dispatch(
+                    showWarningNotification(
+                        {
+                            descriptionKey: "notify.audioUnmuteBlockedDescription",
+                            titleKey: "notify.audioUnmuteBlockedTitle",
+                        },
+                        NOTIFICATION_TIMEOUT_TYPE.MEDIUM
+                    )
+                );
+            }
+            break;
         }
-        break;
-    }
-    case SET_VIDEO_MUTED: {
-        const state = store.getState();
-        const participant = getLocalParticipant(state);
 
-        if (!action.muted && isForceMuted(participant, MEDIA_TYPE.VIDEO, state)) {
-            return;
+        case SET_SCREENSHARE_MUTED: {
+            const state = store.getState();
+            const participant = getLocalParticipant(state);
+
+            if (!action.muted && isForceMuted(participant, MEDIA_TYPE.SCREENSHARE, state)) {
+                return;
+            }
+            break;
         }
-        break;
-    }
+        case SET_VIDEO_MUTED: {
+            const state = store.getState();
+            const participant = getLocalParticipant(state);
 
-    case SET_VIDEO_UNMUTE_PERMISSIONS: {
-        const { blocked, skipNotification } = action;
-        const state = store.getState();
-        const tracks = state['features/base/tracks'];
-        const isVideoMuted = isLocalTrackMuted(tracks, MEDIA_TYPE.VIDEO);
-        const isMediaShared = isScreenMediaShared(state);
-
-        if (blocked && isVideoMuted && !isMediaShared && !skipNotification) {
-            store.dispatch(showWarningNotification({
-                descriptionKey: 'notify.videoUnmuteBlockedDescription',
-                titleKey: 'notify.videoUnmuteBlockedTitle'
-            }, NOTIFICATION_TIMEOUT_TYPE.MEDIUM));
+            if (!action.muted && isForceMuted(participant, MEDIA_TYPE.VIDEO, state)) {
+                return;
+            }
+            break;
         }
-        break;
-    }
+
+        case SET_VIDEO_UNMUTE_PERMISSIONS: {
+            const { blocked, skipNotification } = action;
+            const state = store.getState();
+            const tracks = state["features/base/tracks"];
+            const isVideoMuted = isLocalTrackMuted(tracks, MEDIA_TYPE.VIDEO);
+            console.log("-isVideoMuted-131-", isVideoMuted);
+            const isMediaShared = isScreenMediaShared(state);
+            console.log("-isMediaShared-133-", isMediaShared);
+            if (blocked && isVideoMuted && !isMediaShared && !skipNotification) {
+                store.dispatch(
+                    showWarningNotification(
+                        {
+                            descriptionKey: "notify.videoUnmuteBlockedDescription",
+                            titleKey: "notify.videoUnmuteBlockedTitle",
+                        },
+                        NOTIFICATION_TIMEOUT_TYPE.MEDIUM
+                    )
+                );
+            }
+            break;
+        }
     }
 
     return next(action);
@@ -161,11 +162,11 @@ MiddlewareRegistry.register(store => next => action => {
  * @returns {Object} The value returned by {@code next(action)}.
  */
 function _appStateChanged({ dispatch, getState }: IStore, next: Function, action: AnyAction) {
-    if (navigator.product === 'ReactNative') {
+    if (navigator.product === "ReactNative") {
         const { appState } = action;
-        const mute = appState !== 'active' && !isLocalVideoTrackDesktop(getState());
-
-        sendAnalytics(createTrackMutedEvent('video', 'background mode', mute));
+        const mute = appState !== "active" && !isLocalVideoTrackDesktop(getState());
+        console.log("-mute-168-", mute);
+        sendAnalytics(createTrackMutedEvent("video", "background mode", mute));
 
         dispatch(setVideoMuted(mute, VIDEO_MUTISM_AUTHORITY.BACKGROUND));
     }
@@ -187,8 +188,8 @@ function _appStateChanged({ dispatch, getState }: IStore, next: Function, action
  */
 function _setAudioOnly({ dispatch }: IStore, next: Function, action: AnyAction) {
     const { audioOnly } = action;
-
-    sendAnalytics(createTrackMutedEvent('video', 'audio-only mode', audioOnly));
+    console.log("-audioOnly-191-", audioOnly);
+    sendAnalytics(createTrackMutedEvent("video", "audio-only mode", audioOnly));
 
     // Make sure we mute both the desktop and video tracks.
     dispatch(setVideoMuted(audioOnly, VIDEO_MUTISM_AUTHORITY.AUDIO_ONLY));
@@ -219,15 +220,16 @@ function _setRoom({ dispatch, getState }: IStore, next: Function, action: AnyAct
 
     const state = getState();
     const { room } = action;
+    console.log("-room-223-", room);
     const roomIsValid = isRoomValid(room);
-
+    console.log("-roomIsValid-225-", roomIsValid);
     // when going to welcomepage on web(room is not valid) we want to skip resetting the values of startWithA/V
-    if (roomIsValid || navigator.product === 'ReactNative') {
+    if (roomIsValid || navigator.product === "ReactNative") {
         const audioMuted = roomIsValid ? getStartWithAudioMuted(state) : _AUDIO_INITIAL_MEDIA_STATE.muted;
         const videoMuted = roomIsValid ? getStartWithVideoMuted(state) : _VIDEO_INITIAL_MEDIA_STATE.muted;
-
-        sendAnalytics(createStartMutedConfigurationEvent('local', audioMuted, Boolean(videoMuted)));
-        logger.log(`Start muted: ${audioMuted ? 'audio, ' : ''}${videoMuted ? 'video' : ''}`);
+        console.log("-audioMuted-230-", audioMuted, videoMuted);
+        sendAnalytics(createStartMutedConfigurationEvent("local", audioMuted, Boolean(videoMuted)));
+        logger.log(`Start muted: ${audioMuted ? "audio, " : ""}${videoMuted ? "video" : ""}`);
 
         // Unconditionally express the desires/expectations/intents of the app and
         // the user i.e. the state of base/media. Eventually, practice/reality i.e.
@@ -247,36 +249,37 @@ function _setRoom({ dispatch, getState }: IStore, next: Function, action: AnyAct
     // XXX After the introduction of the "Video <-> Voice" toggle on the
     // WelcomePage, startAudioOnly is utilized even outside of
     // conferences/meetings.
-    const audioOnly
-        = Boolean(
-            getPropertyValue(
-                state,
-                'startAudioOnly',
-                /* sources */ {
-                    // FIXME Practically, base/config is (really) correct
-                    // only if roomIsValid. At the time of this writing,
-                    // base/config is overwritten by URL params which leaves
-                    // base/config incorrect on the WelcomePage after
-                    // leaving a conference which explicitly overwrites
-                    // base/config with URL params.
-                    config: roomIsValid,
+    const audioOnly = Boolean(
+        getPropertyValue(
+            state,
+            "startAudioOnly",
+            /* sources */ {
+                // FIXME Practically, base/config is (really) correct
+                // only if roomIsValid. At the time of this writing,
+                // base/config is overwritten by URL params which leaves
+                // base/config incorrect on the WelcomePage after
+                // leaving a conference which explicitly overwrites
+                // base/config with URL params.
+                config: roomIsValid,
 
-                    // XXX We've already overwritten base/config with
-                    // urlParams if roomIsValid. However, settings are more
-                    // important than the server-side config. Consequently,
-                    // we need to read from urlParams anyway. We also
-                    // probably want to read from urlParams when
-                    // !roomIsValid.
-                    urlParams: true,
+                // XXX We've already overwritten base/config with
+                // urlParams if roomIsValid. However, settings are more
+                // important than the server-side config. Consequently,
+                // we need to read from urlParams anyway. We also
+                // probably want to read from urlParams when
+                // !roomIsValid.
+                urlParams: true,
 
-                    // The following don't have complications around whether
-                    // they are defined or not:
-                    jwt: false,
+                // The following don't have complications around whether
+                // they are defined or not:
+                jwt: false,
 
-                    // We need to look for 'startAudioOnly' in settings only for react native clients. Otherwise, the
-                    // default value from ISettingsState (false) will override the value set in config for web clients.
-                    settings: typeof APP === 'undefined'
-                }));
+                // We need to look for 'startAudioOnly' in settings only for react native clients. Otherwise, the
+                // default value from ISettingsState (false) will override the value set in config for web clients.
+                settings: typeof APP === "undefined",
+            }
+        )
+    );
 
     sendAnalytics(createStartAudioOnlyEvent(audioOnly));
     logger.log(`Start audio only set to ${audioOnly.toString()}`);
@@ -299,10 +302,10 @@ function _setRoom({ dispatch, getState }: IStore, next: Function, action: AnyAct
  * @returns {void}
  */
 function _syncTrackMutedState({ getState, dispatch }: IStore, track: ITrack) {
-    const state = getState()['features/base/media'];
+    const state = getState()["features/base/media"];
     const mediaType = track.mediaType;
     const muted = Boolean(state[mediaType].muted);
-
+console.log("--muted-308-", muted, mediaType)
     // XXX If muted state of track when it was added is different from our media
     // muted state, we need to mute track and explicitly modify 'muted' property
     // on track. This is because though TRACK_ADDED action was dispatched it's
@@ -310,7 +313,7 @@ function _syncTrackMutedState({ getState, dispatch }: IStore, track: ITrack) {
     // fired before track gets to state.
     if (track.muted !== muted) {
         sendAnalytics(createSyncTrackStateEvent(mediaType, muted));
-        logger.log(`Sync ${mediaType} track muted state to ${muted ? 'muted' : 'unmuted'}`);
+        logger.log(`Sync ${mediaType} track muted state to ${muted ? "muted" : "unmuted"}`);
 
         track.muted = muted;
         setTrackMuted(track.jitsiTrack, muted, state, dispatch);

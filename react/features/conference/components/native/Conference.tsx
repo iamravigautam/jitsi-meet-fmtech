@@ -49,6 +49,7 @@ import TitleBar from "./TitleBar";
 import { EXPANDED_LABEL_TIMEOUT } from "./constants";
 import styles from "./styles";
 import { getParticipantCount } from "../../../base/participants/functions";
+import CustomLoader from "../../../base/react/components/native/CustomLoader";
 
 /**
  * The type of the React {@code Component} props of {@link Conference}.
@@ -413,12 +414,23 @@ class Conference extends AbstractConference<IProps, State> {
                      * The activity/loading indicator goes above everything, except
                      * the toolbox/toolbars and the dialogs.
                      */
+
+                    // _connecting && (
+                    //     <TintedView>
+                    //         <LoadingIndicator />
+                    //     </TintedView>
+                    // )
+
                     (_connecting || _numberOfParticipents <= 1) && (
-                        <TintedView>
-                            <LoadingIndicator />
-                        </TintedView>
+
+                 
+                       <TintedView>
+                               <CustomLoader/>
+                        {/*   <LoadingIndicator /> */}
+                    </TintedView>
                     )
                 }
+               
 
                 <View pointerEvents="box-none" style={styles.toolboxAndFilmstripContainer as ViewStyle}>
                     <Captions onPress={this._onClick} />
@@ -430,11 +442,14 @@ class Conference extends AbstractConference<IProps, State> {
                     )}
 
                     {!_shouldDisplayTileView && <LonelyMeetingExperience />}
-
+                    
+           
+            
                     {_shouldDisplayTileView || (
                         <>
                             <Filmstrip />
                             {this._renderNotificationsContainer()}
+
                             <Toolbox />
                         </>
                     )}
@@ -583,12 +598,8 @@ function _mapStateToProps(state: IReduxState, _ownProps: any) {
         _showLobby: getIsLobbyVisible(state),
         _startCarMode: startCarMode,
         _toolboxVisible: isToolboxVisible(state),
-        _isBackButtonEnabled: Boolean(
-            getFeatureFlag(state, BACK_BUTTON_HANDLER, false)
-        ),
-        _isDirectJoin: Boolean(
-            getFeatureFlag(state, DIRECT_JOIN_MEETING_ENABLED, false)
-        ),
+        _isBackButtonEnabled: Boolean(getFeatureFlag(state, BACK_BUTTON_HANDLER, false)),
+        _isDirectJoin: Boolean(getFeatureFlag(state, DIRECT_JOIN_MEETING_ENABLED, false)),
         _numberOfParticipents: getParticipantCount(state),
     };
 }
