@@ -45,7 +45,7 @@ interface IProps extends AbstractAppProps {
     minBitrate?: Number;
     stdBitrate?: Number;
     maxBitrate?: Number;
-
+    // customLoaderView?: Boolean;
     /**
      * An object with the feature flags.
      */
@@ -126,6 +126,7 @@ export class App extends AbstractApp<IProps> {
 
          // Function to extract custom parameters based on platform
          const extractCustomParams = (props) => {
+            console.log("--props---", props)
             if (Platform.OS === "ios") {
                 // Extract custom params from URL object for iOS
                 return props.url?.config ?? {};
@@ -139,6 +140,7 @@ export class App extends AbstractApp<IProps> {
                     meetingTitle: props.meetingTitle,
                     lobyTitle: props.lobyTitle,
                     lobyDescription: props.lobyDescription,
+                    // customLoaderView: props.customLoaderView,
                 };
             } else {
                 // Handle other platforms if needed
@@ -207,7 +209,7 @@ export class App extends AbstractApp<IProps> {
         dispatch?.(setWaitingText(customParams.waitingAreaText || ""));
 
         dispatch?.(setMeetingTitle(customParams.meetingTitle || ""));
-
+        // dispatch?.(setCustomLoaderView(customParams.customLoaderView || ""));
         dispatch?.(setLobyTitle(customParams.lobyTitle || ""));
         dispatch?.(setLobyDescription(customParams.lobyDescription || ""));
 

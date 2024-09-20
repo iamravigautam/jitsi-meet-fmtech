@@ -13,6 +13,7 @@ import {
     FULLSCREEN_ENABLED,
     PIP_ENABLED,
     END_MEETING_OPTIONS,
+    CUSTOM_LOADER_OPTIONS,
 } from "../../../base/flags/constants";
 import { getFeatureFlag } from "../../../base/flags/functions";
 import Container from "../../../base/react/components/native/Container";
@@ -156,6 +157,8 @@ interface IProps extends AbstractProps {
      * Get direct join flag from mainactivity
      */
     _isDirectJoin: boolean;
+
+    _isCustomLoaderShow: boolean;
 }
 
 type State = {
@@ -374,6 +377,7 @@ class Conference extends AbstractConference<IProps, State> {
             _shouldDisplayTileView,
             _toolboxVisible,
             _numberOfParticipents,
+            _isCustomLoaderShow
         } = this.props;
 
         let alwaysOnTitleBarStyles;
@@ -421,16 +425,14 @@ class Conference extends AbstractConference<IProps, State> {
                     //     </TintedView>
                     // )
 
-                    (_connecting || _numberOfParticipents <= 1) && (
+                    (_isCustomLoaderShow && _numberOfParticipents <= 1) && (
 
-                 
                        <TintedView>
-                               <CustomLoader/>
+                               <CustomLoader />
                         {/*   <LoadingIndicator /> */}
                     </TintedView>
                     )
                 }
-               
 
                 <View pointerEvents="box-none" style={styles.toolboxAndFilmstripContainer as ViewStyle}>
                     <Captions onPress={this._onClick} />
@@ -442,9 +444,7 @@ class Conference extends AbstractConference<IProps, State> {
                     )}
 
                     {!_shouldDisplayTileView && <LonelyMeetingExperience />}
-                    
-           
-            
+
                     {_shouldDisplayTileView || (
                         <>
                             <Filmstrip />
@@ -509,6 +509,7 @@ class Conference extends AbstractConference<IProps, State> {
 
                 {_connecting && (
                     <TintedView>
+                        {/* <CustomLoader /> */}
                         <LoadingIndicator />
                     </TintedView>
                 )}
@@ -601,6 +602,7 @@ function _mapStateToProps(state: IReduxState, _ownProps: any) {
         _isBackButtonEnabled: Boolean(getFeatureFlag(state, BACK_BUTTON_HANDLER, false)),
         _isDirectJoin: Boolean(getFeatureFlag(state, DIRECT_JOIN_MEETING_ENABLED, false)),
         _numberOfParticipents: getParticipantCount(state),
+        _isCustomLoaderShow: Boolean(getFeatureFlag(state, CUSTOM_LOADER_OPTIONS, false)),
     };
 }
 

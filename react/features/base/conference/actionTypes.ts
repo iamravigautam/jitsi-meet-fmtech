@@ -332,6 +332,7 @@ export const SET_LOBY_DISCRIPTION = 'SET_LOBY_DISCRIPTION';
 export const SET_MIN_BITRATE = 'SET_MIN_BITRATE';
 export const SET_STD_BITRATE = 'SET_STD_BITRATE';
 export const SET_MAX_BITRATE = 'SET_MAX_BITRATE';
+// export const SET_CUSTOM_LOADER = 'SET_CUSTOM_LOADER';
 
 /**
  * The type of (redux) action which updates the current known status of the

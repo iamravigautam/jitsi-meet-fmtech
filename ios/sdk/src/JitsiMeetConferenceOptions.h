@@ -17,7 +17,7 @@
 #import <Foundation/Foundation.h>
 
 #import "JitsiMeetUserInfo.h"
-
+#import <UIKit/UIKit.h>
 
 @interface JitsiMeetConferenceOptionsBuilder : NSObject
 
@@ -61,6 +61,12 @@
  * MaxBitrate.
  */
 @property (nonatomic, copy, nullable) NSNumber *maxBitrate;
+
+/**
+ * Custom Loader View.
+ */
+// @property (nonatomic, strong, nullable) UIView *customLoaderView;
+
 /**
  * JWT token used for authentication.
  */
@@ -95,6 +101,7 @@
 
 - (void)setWaitingAreaText:(NSString * _Nullable)waitingAreaText;
 - (void)setMeetingTitle:(NSString * _Nullable)meetingTitle;
+// - (void)setCustomLoaderView:(UIView * _Nullable)customLoaderView;
 - (void)setLobyTitle:(NSString * _Nullable)lobyTitle;
 - (void)setLobyDescription:(NSString * _Nullable)lobyDescription;
 - (void)setMinBitrate:(nullable NSNumber *)minBitrate;
@@ -112,6 +119,7 @@
 
 @property (nonatomic, copy, nullable, readonly) NSString *waitingAreaText;
 @property (nonatomic, copy, nullable, readonly) NSString *meetingTitle;
+// @property (nonatomic, strong, nullable, readonly) UIView *customLoaderView;
 @property (nonatomic, copy, nullable, readonly) NSString *lobyTitle;
 @property (nonatomic, copy, nullable, readonly) NSString *lobyDescription;
 @property (nonatomic, copy, nullable, readonly) NSNumber *minBitrate;

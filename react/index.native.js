@@ -18,6 +18,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Function to extract custom parameters based on platform
 const extractCustomParams = (initialProps) => {
+    console.log("--initialProps--", initialProps)
 
     if (Platform.OS === "ios") {
         // Extract custom params from URL object for iOS
@@ -31,7 +32,8 @@ const extractCustomParams = (initialProps) => {
             meetingTitle: initialProps.meetingTitle,
             waitingAreaText: initialProps.waitingAreaText,
             lobyTitle: initialProps.lobyTitle,
-            lobyDescription: initialProps.lobyDescription
+            lobyDescription: initialProps.lobyDescription,
+            // customLoaderView: initialProps.customLoaderView
         };
     } else {
         // Handle other platforms if needed
@@ -55,10 +57,11 @@ class Root extends PureComponent {
             meetingTitle,
             waitingAreaText,
             lobyTitle,
-            lobyDescription
+            lobyDescription,
+            
         } = customParams;
         this.saveBitrateValues(minBitrate, stdBitrate, maxBitrate);
-        this.saveTitleValues(meetingTitle, waitingAreaText, lobyTitle, lobyDescription);
+        this.saveTitleValues(meetingTitle, waitingAreaText, lobyTitle, lobyDescription );
     }
 
     async saveBitrateValues(minBitrate, stdBitrate, maxBitrate) {
@@ -67,6 +70,7 @@ class Root extends PureComponent {
             await AsyncStorage.setItem("minBitrate", minBitrate.toString());
             await AsyncStorage.setItem("stdBitrate", stdBitrate.toString());
             await AsyncStorage.setItem("maxBitrate", maxBitrate.toString());
+            // await AsyncStorage.setItem("customLoaderView", customLoaderView.toString());
         } catch (error) {
             console.error("Error saving bitrate values:", error);
         }
@@ -79,6 +83,8 @@ class Root extends PureComponent {
             await AsyncStorage.setItem("waitingText", waitingAreaText.toString());
             await AsyncStorage.setItem("lobyTitle", lobyTitle.toString());
             await AsyncStorage.setItem("lobyDescription", lobyDescription.toString());
+       
+            
         } catch (error) {
             console.error("Error saving bitrate values:", error);
         }

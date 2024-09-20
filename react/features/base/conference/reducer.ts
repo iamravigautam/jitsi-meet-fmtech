@@ -39,7 +39,8 @@ import {
     SET_STD_BITRATE,
     SET_MAX_BITRATE,
     SET_LOBY_TITLE,
-    SET_LOBY_DISCRIPTION
+    SET_LOBY_DISCRIPTION,
+    // SET_CUSTOM_LOADER,
 } from './actionTypes';
 import { isRoomValid } from './functions';
 
@@ -61,7 +62,8 @@ const DEFAULT_STATE = {
     lobyDescription: undefined,
     minBitrate: undefined,
     stdBitrate: undefined,
-    maxBitrate: undefined
+    maxBitrate: undefined,
+    // customLoaderView: undefined
 };
 
 export interface IConferenceMetadata {
@@ -150,6 +152,7 @@ export interface IJitsiConference {
     setWaitingText: Function;
     setMeetingTitle: Function;
     setLobyTitle: Function;
+    // setCustomLoaderView: Function;
     setLobyDescription: Function;
     setMinBitrate: Function;
     setStdBitrate: Function;
@@ -180,6 +183,7 @@ export interface IConferenceState {
     meetingTitle?: string;
     lobyTitle?: string;
     lobyDescription?: string;
+    // customLoaderView?: boolean;
     minBitrate?: number;
     stdBitrate?: number;
     maxBitrate?: number;
@@ -302,6 +306,9 @@ ReducerRegistry.register<IConferenceState>('features/base/conference',
         
                 case SET_MEETING_TITLE:
                 return set(state, 'meetingTitle', action.meetingTitle);
+
+                // case SET_CUSTOM_LOADER:
+                // return set(state, 'customLoaderView', action.customLoaderView);
         
                 case SET_LOBY_TITLE:
                 return set(state, 'lobyTitle', action.lobyTitle);

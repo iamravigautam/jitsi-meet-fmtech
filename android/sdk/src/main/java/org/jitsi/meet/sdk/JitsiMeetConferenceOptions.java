@@ -19,7 +19,7 @@ package org.jitsi.meet.sdk;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
-
+import android.view.View;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -46,21 +46,23 @@ public class JitsiMeetConferenceOptions implements Parcelable {
      */
     private String token;
 
-      // set waiting area Text
-      private String waitingAreaText;
+    // set waiting area Text
+    private String waitingAreaText;
 
-      // set Title for meeting in jitsi room
-      private String meetingTitle;
+    // Custom loader view as Bundle reference for Android
+    // private Bundle customLoaderView;  
+    // set Title for meeting in jitsi room
+    private String meetingTitle;
   
-      // set Title for lobby in jitsi room
-      private String lobyTitle;
+    // set Title for lobby in jitsi room
+    private String lobyTitle;
       
-      // set Title for lobby description in jitsi room
-      private String lobyDescription;
+    // set Title for lobby description in jitsi room
+    private String lobyDescription;
   
-      private Integer minBitrate;
-      private Integer stdBitrate;
-      private Integer maxBitrate;
+    private Integer minBitrate;
+    private Integer stdBitrate;
+    private Integer maxBitrate;
 
     /**
      * Config. See: https://github.com/jitsi/jitsi-meet/blob/master/config.js
@@ -95,7 +97,9 @@ public class JitsiMeetConferenceOptions implements Parcelable {
     public String getMeetingTitle() {
         return meetingTitle;
     }
-
+    // public Bundle getCustomLoaderView() {
+    //     return customLoaderView;
+    // }
     public String getLobyTitle() {
         return lobyTitle;
     }
@@ -129,6 +133,7 @@ public class JitsiMeetConferenceOptions implements Parcelable {
         private String room;
         private String token;
         private String waitingAreaText;
+        // private View customLoaderView;
         private String meetingTitle;
         private String lobyTitle;
         private String lobyDescription;
@@ -231,6 +236,12 @@ public class JitsiMeetConferenceOptions implements Parcelable {
 
             return this;
         }
+
+        // public Builder setCustomLoaderView(View customLoaderView) {
+        //     this.customLoaderView = customLoaderView;
+        //     return this;
+        // }
+       
         /**
          * Indicates the conference will be joined with the microphone muted.
          * @param audioMuted - Muted indication.
@@ -336,6 +347,7 @@ public class JitsiMeetConferenceOptions implements Parcelable {
             options.room = this.room;
             options.token = this.token;
             options.waitingAreaText = this.waitingAreaText;
+            // options.customLoaderView = this.customLoaderView;
             options.meetingTitle = this.meetingTitle;
             options.lobyTitle = this.lobyTitle;
             options.lobyDescription = this.lobyDescription;
@@ -367,6 +379,7 @@ public class JitsiMeetConferenceOptions implements Parcelable {
         config = in.readBundle();
         featureFlags = in.readBundle();
         userInfo = new JitsiMeetUserInfo(in.readBundle());
+        // customLoaderView = in.readBundle();
     }
 
     Bundle asProps() {
@@ -394,6 +407,11 @@ public class JitsiMeetConferenceOptions implements Parcelable {
         if (waitingAreaText != null) {
             props.putString("waitingAreaText", waitingAreaText);
         }
+
+        // if (customLoaderView != null) {
+        //     props.putBundle("customLoaderView", customLoaderView);
+        // }
+        
         if (meetingTitle != null) {
             props.putString("meetingTitle", meetingTitle);
         }
@@ -415,7 +433,6 @@ public class JitsiMeetConferenceOptions implements Parcelable {
         if (maxBitrate != null) {
             props.putInt("maxBitrate", maxBitrate);
         }
-
 
         if (userInfo != null) {
             props.putBundle("userInfo", userInfo.asBundle());
@@ -457,6 +474,7 @@ public class JitsiMeetConferenceOptions implements Parcelable {
         dest.writeBundle(config);
         dest.writeBundle(featureFlags);
         dest.writeBundle(userInfo != null ? userInfo.asBundle() : new Bundle());
+        // dest.writeBundle(customLoaderView);
     }
 
     @Override

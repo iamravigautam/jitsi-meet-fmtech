@@ -309,6 +309,9 @@ export const MODERATOR_OPTION = 'moderatorOption.enabled';
 // set options for end meeting
 export const END_MEETING_OPTIONS = 'endMeetingOptions.enabled';
 
+// set options for custom Loader
+export const CUSTOM_LOADER_OPTIONS = 'customLoaderShow.enabled';
+
 // set Bitrate
 
 export const MIN_BITRATE = 'minBitrate';
@@ -317,5 +320,5 @@ export const STD_BITRATE = 'stdBitrate';
 
 export const MAX_BITRATE = 'maxBitrate';
 
-
+// export const CUSTOM_LOADER = 'customLoaderView'
 

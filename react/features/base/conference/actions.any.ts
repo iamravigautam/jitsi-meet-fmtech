@@ -77,6 +77,7 @@ import {
     SET_MAX_BITRATE,
     SET_LOBY_TITLE,
     SET_LOBY_DISCRIPTION,
+    // SET_CUSTOM_LOADER,
 
 } from './actionTypes';
 import { setupVisitorStartupMedia } from './actions';
@@ -1110,6 +1111,22 @@ export function setMeetingTitle(meetingTitle: string | undefined) {
         }
     };
 }
+
+// export function setCustomLoaderView(customLoaderView: string | undefined) {
+    
+//     return (dispatch: IStore["dispatch"], getState: IStore["getState"]) => {
+//         const { conference } = getState()["features/base/conference"];
+
+//         if (conference) {
+//             conference.setCustomLoaderView(customLoaderView || "");
+//         } else {
+//             dispatch({
+//                 type: SET_CUSTOM_LOADER,
+//                 customLoaderView,
+//             });
+//         }
+//     };
+// }
 
 export function setLobyTitle(lobyTitle: string | undefined) {
    

@@ -55,6 +55,7 @@ import {
     SET_STD_BITRATE,
     SET_LOBY_TITLE,
     SET_LOBY_DISCRIPTION,
+    // SET_CUSTOM_LOADER,
 } from './actionTypes';
 import {
     authStatusChanged,
@@ -75,7 +76,7 @@ import {
 } from './functions';
 import logger from './logger';
 import { IConferenceMetadata } from './reducer';
-import { setLobyDescription, setLobyTitle, setMaxBitrate, setMeetingTitle, setMinBitrate, setStdBitrate, setWaitingText } from './actions.any';
+import {  setLobyDescription, setLobyTitle, setMaxBitrate, setMeetingTitle, setMinBitrate, setStdBitrate, setWaitingText,} from './actions.any';
 
 /**
  * Handler for before unload event.
@@ -301,6 +302,7 @@ function _conferenceJoined({ dispatch, getState }: IStore, next: Function, actio
         minBitrate,
         stdBitrate,
         maxBitrate,
+        // customLoaderView,
     } = getState()["features/base/conference"];
     const {
         disableBeforeUnloadHandlers = false,
@@ -312,6 +314,7 @@ function _conferenceJoined({ dispatch, getState }: IStore, next: Function, actio
     pendingSubjectChange && dispatch(setSubject(pendingSubjectChange));
     waitingText && dispatch(setWaitingText(waitingText));
     meetingTitle && dispatch(setMeetingTitle(meetingTitle));
+    // customLoaderView && dispatch(setCustomLoaderView(customLoaderView));
     lobyTitle && dispatch(setLobyTitle(lobyTitle));
     lobyDescription && dispatch(setLobyDescription(lobyDescription));
     minBitrate && dispatch(setMinBitrate(minBitrate));
@@ -501,6 +504,7 @@ function _conferenceSubjectChanged({ dispatch, getState }: IStore, next: Functio
         lobyDescription,
         minBitrate,
         maxBitrate,
+        // customLoaderView,
         stdBitrate, } = getState()['features/base/conference'];
 
     if (subject) {
@@ -523,6 +527,13 @@ function _conferenceSubjectChanged({ dispatch, getState }: IStore, next: Functio
             meetingTitle: undefined,
         });
     }
+
+    // if (customLoaderView) {
+    //     dispatch({
+    //         type: SET_CUSTOM_LOADER,
+    //         customLoaderView: undefined,
+    //     });
+    // }
 
     if (lobyTitle) {
         dispatch({
@@ -788,6 +799,7 @@ function _updateLocalParticipantInConference({ dispatch, getState }: IStore, nex
                 lobyDescription,
                 minBitrate,
                 stdBitrate,
+                // customLoaderView,
                 maxBitrate, } = getState()['features/base/conference'];
 
             // When the local user role is updated to moderator and we have a pending subject change
@@ -802,6 +814,10 @@ function _updateLocalParticipantInConference({ dispatch, getState }: IStore, nex
             if (typeof meetingTitle !== "undefined") {
                 dispatch(setMeetingTitle(meetingTitle));
             }
+
+            // if (typeof customLoaderView !== "undefined") {
+            //     dispatch(setCustomLoaderView(customLoaderView));
+            // }
 
             if (typeof lobyTitle !== "undefined") {
                 dispatch(setLobyTitle(lobyTitle));

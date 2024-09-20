@@ -36,6 +36,7 @@
         _minBitrate = nil;
         _stdBitrate = nil;
         _maxBitrate = nil;
+//        _customLoaderView = nil;
 
         _config = [[NSMutableDictionary alloc] init];
         _featureFlags = [[NSMutableDictionary alloc] init];
@@ -85,6 +86,11 @@
 - (void)setMeetingTitle:(NSString *)meetingTitle {
     [self setConfigOverride:@"meetingTitle" withValue:meetingTitle];
 }
+
+
+// - (void)setCustomLoaderView:(UIView *)customLoaderView { // Update method name and type
+//     [self setConfigOverride:@"customLoaderView" withValue:customLoaderView];
+// }
 
 - (void)setLobyTitle:(NSString *)lobyTitle {
     [self setConfigOverride:@"lobyTitle" withValue:lobyTitle];
@@ -138,6 +144,7 @@
         _room = builder.room;
         _token = builder.token;
         _waitingAreaText = builder.waitingAreaText;
+        // _customLoaderView = builder.customLoaderView;
         _meetingTitle = builder.meetingTitle;
         _lobyTitle = builder.lobyTitle;
         _lobyDescription = builder.lobyDescription;
@@ -196,7 +203,9 @@
     if (_meetingTitle != nil){
         urlProps[@"meetingTitle"] = _meetingTitle;
     }
-
+    // if (_customLoaderView != nil){
+    //     urlProps[@"customLoaderView"] = _customLoaderView;
+    // }
     if (_lobyTitle != nil){
         urlProps[@"lobyTitle"] = _lobyTitle;
     }

@@ -224,6 +224,7 @@ export default [
     'startWithVideoMuted',
     'WaitingText',
     'meetingTitle',
+    // 'customLoaderView',
     'lobyTitle',
     'lobyDescription',
     'minBitrate',
@@ -244,5 +245,5 @@ export default [
     'watchRTCConfigParams',
     'webrtcIceTcpDisable',
     'webrtcIceUdpDisable',
-    'whiteboard.enabled'
+    'whiteboard.enabled',
 ].concat(extraConfigWhitelist);

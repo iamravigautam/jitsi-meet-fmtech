@@ -76,6 +76,8 @@ public class MainActivity extends JitsiMeetActivity {
      int minBitrate = getMinBitrateFromRN();
      int stdBitrate = getStdBitrateFromRN();
      int maxBitrate = getMaxBitrateFromRN();
+     // Assuming customLoaderView is set in your React Native code or some method to get it
+    //  Object customLoaderView = getCustomLoaderViewFromRN();
 
     // JitsiMeetActivity overrides
     //
@@ -161,14 +163,18 @@ public class MainActivity extends JitsiMeetActivity {
             .setFeatureFlag("directJoin.enabled", true) // set Lobby screen disabled or enabled
             .setFeatureFlag("moderatorOption.enabled", true) // set moderator option disabled or enabled
             .setFeatureFlag("endMeetingOptions.enabled", true) // set options for end meeting
+            .setFeatureFlag("customLoaderShow.enabled", true) // set options for Custom Loader
             .setMinBitrate(minBitrate) // set minimum bitrate
             .setStdBitrate(stdBitrate) // set standard bitrate
             .setMaxBitrate(maxBitrate) // set maximum bitrate
+            // .setCustomLoaderView(customLoaderView) // Set CustomLoader view
             .setFeatureFlag("welcomepage.enabled", true)
             .setFeatureFlag("server-url-change.enabled", !configurationByRestrictions)
             .build();
         JitsiMeet.setDefaultConferenceOptions(defaultOptions);
     }
+
+
 
     private int getMinBitrateFromRN() {
         // Implement the logic to get minBitrate from React Native
@@ -185,6 +191,10 @@ public class MainActivity extends JitsiMeetActivity {
         return 1000000; // Replace with the actual value
     }
 
+    // private Object getCustomLoaderViewFromRN() {
+    //
+    //     return new Bundle(); // Replace with the actual view object
+    // }
 
     private void resolveRestrictions() {
         RestrictionsManager manager =

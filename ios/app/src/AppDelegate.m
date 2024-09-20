@@ -33,16 +33,25 @@
     jitsiMeet.customUrlScheme = @"org.jitsi.meet";
     jitsiMeet.universalLinkDomains = @[@"meet.jit.si", @"alpha.jitsi.net", @"beta.meet.jit.si"];
 
+     // Create your custom loader view
+    // UIView *customLoaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+    // customLoaderView.backgroundColor = [UIColor whiteColor];
+    // UIActivityIndicatorView *activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleLarge];
+    // activityIndicator.center = customLoaderView.center;
+    // [activityIndicator startAnimating];
+    // [customLoaderView addSubview:activityIndicator];
+
     jitsiMeet.defaultConferenceOptions = [JitsiMeetConferenceOptions fromBuilder:^(JitsiMeetConferenceOptionsBuilder *builder) {
         [builder setFeatureFlag:@"welcomepage.enabled" withBoolean:YES];
         [builder setFeatureFlag:@"backButtonHandler.enabled" withBoolean:YES]; // set back button on meeting room
         [builder setFeatureFlag:@"directJoin.enabled" withBoolean:YES]; // set Lobby screen disabled or enabled
         [builder setFeatureFlag:@"moderatorOption.enabled" withBoolean:YES]; // set moderator options disabled or enabled
         [builder setFeatureFlag:@"endMeetingOptions.enabled" withBoolean:YES]; // set options for end meeting
+        [builder setFeatureFlag:@"customLoaderShow.enabled" withBoolean:YES]; // set options for Custom Loader
         [builder setWaitingAreaText:@"Please wait... in waiting area while meeting starting."]; // set custom text for waiting area
         [builder setMeetingTitle:@"My Title"]; // set meeting title
         [builder setLobyTitle:@"Lobby Title"]; // set lobby title
-        [builder setLobyDescription:@"Lobby Description"]; // set lobby description
+        [builder setLobyDescription:@"Lobby Description"]; // set lobby description [builder setCustomLoaderView:customLoaderView];
         [builder setMinBitrate:@(100000)]; // set minimum bitrate
         [builder setStdBitrate:@(300000) ]; // set standard bitrate
         [builder setMaxBitrate:@(1000000) ]; // set maximum bitrate

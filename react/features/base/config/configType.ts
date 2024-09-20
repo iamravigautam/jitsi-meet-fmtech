@@ -627,6 +627,10 @@ export interface IConfig {
         endMeetingOptions?: string;
         disabled?: boolean;
     };
+    customLoaderShowHandler?: {
+        customLoaderShow?: string;
+        disabled?: boolean;
+    };
     TextForWaitingArea?: {
         waitingAreaText?: string;
         disabled?: boolean;
@@ -635,6 +639,10 @@ export interface IConfig {
         meetingTitle?: string;
         disabled?: boolean;
     };
+    // ViewForCustomLoader?: {
+    //     customLoaderView?: boolean;
+    //     disabled?: boolean;
+    // };
     TextForLobyTitle?: {
         lobyTitle?: string;
         disabled?: boolean;

@@ -373,6 +373,10 @@ function initCommands() {
             sendAnalytics(createApiEvent('meetingTitle.changed'));
             APP.store.dispatch(setMeetingTitle(meetingTitle));
         },
+        // 'customLoaderView': customLoaderView => {
+        //     sendAnalytics(createApiEvent('customLoaderView.changed'));
+        //     APP.store.dispatch(setCustomLoaderView(customLoaderView));
+        // },
         'lobyTitle': lobyTitle => {
             sendAnalytics(createApiEvent('lobyTitle.changed'));
             APP.store.dispatch(setLobyTitle(lobyTitle));

@@ -12,6 +12,7 @@ import {
     LOBY_DESCRIPTION,
     END_MEETING_OPTIONS,
     MODERATOR_OPTION,
+    CUSTOM_LOADER_OPTIONS,
 } from "../base/flags/constants";
 import { getFeatureFlag } from '../base/flags/functions';
 import { toState } from '../base/redux/functions';
@@ -84,6 +85,16 @@ export function isEndMeetingOptionsHandlerEnabled(stateful: IStateful) {
     const config = toState(stateful)["features/base/config"];
 
     return !config.endMeetingOptionsHandler?.disabled;
+}
+
+export function isCustomLoaderShowHandlerEnabled(stateful: IStateful) {
+    if (navigator.product === "ReactNative") {
+        return getFeatureFlag(stateful, CUSTOM_LOADER_OPTIONS, false);
+    }
+
+    const config = toState(stateful)["features/base/config"];
+
+    return !config.customLoaderShowHandler?.disabled;
 }
 
 // set waiting area text

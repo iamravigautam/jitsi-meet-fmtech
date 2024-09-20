@@ -1011,6 +1011,14 @@ export function createMeetingTitleEvent() {
     };
 }
 
+
+//Set custom Loader 
+
+// export function createCustomLoaderEvent() {
+//     return {
+//         action: 'customLoaderView'
+//     };
+// }
 //Set loby title
 
 export function createLobyTitleEvent() {

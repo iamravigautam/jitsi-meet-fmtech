@@ -49,6 +49,7 @@ interface IFlags {
     "directJoin.enabled"?: boolean;
     "backButtonHandler.enabled"?: boolean;
     "endMeetingOptions.enabled"?: boolean;
+    "customLoaderShow.enabled"?: boolean;
     "moderatorEnable.enabled"?: boolean;
 }
 
@@ -65,6 +66,7 @@ interface IAppProps {
     minBitrate: number;
     stdBitrate: number;
     maxBitrate: number;
+    // customLoaderView: number;
     style?: Object;
     token?: string;
     userInfo?: IUserInfo;
@@ -82,6 +84,7 @@ export interface JitsiRefProps {
  * Main React Native SDK component that displays a Jitsi Meet conference and gets all required params as props
  */
 export const JitsiMeeting = forwardRef<JitsiRefProps, IAppProps>((props, ref) => {
+    console.log("--props--86", props)
     const [ appProps, setAppProps ] = useState({});
     const app = useRef(null);
     const {
@@ -99,7 +102,8 @@ export const JitsiMeeting = forwardRef<JitsiRefProps, IAppProps>((props, ref) =>
         lobyDescription,
         minBitrate,
         stdBitrate,
-        maxBitrate
+        maxBitrate, 
+        // customLoaderView
     } = props;
 
     flags["prejoinpage.enabled"] =  flags["directJoin.enabled"] ?  false : true
@@ -183,6 +187,7 @@ export const JitsiMeeting = forwardRef<JitsiRefProps, IAppProps>((props, ref) =>
                 'maxBitrate': maxBitrate,
                 'lobyTitle': lobyTitle,
                 'lobyDescription': lobyDescription,
+                // 'customLoaderView': customLoaderView,
             });
         }, []
     );
@@ -193,7 +198,7 @@ export const JitsiMeeting = forwardRef<JitsiRefProps, IAppProps>((props, ref) =>
             await AsyncStorage.setItem("minBitrate", minBitrate.toString());
             await AsyncStorage.setItem("stdBitrate", stdBitrate.toString());
             await AsyncStorage.setItem("maxBitrate", maxBitrate.toString());
-     
+            // await AsyncStorage.setItem("customLoaderView", customLoaderView.toString());
         } catch (error) {
             console.error("Set the value of minBitrate, stdBitrate, maxBitrate", error);
         }
